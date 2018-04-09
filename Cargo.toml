@@ -4,3 +4,5 @@ version = "0.1.0"
 authors = ["Johannes Köster <johannes.koester@tu-dortmund.de>"]
 
 [dependencies]
+serde = "1.0"
+serde_derive = "1.0"
