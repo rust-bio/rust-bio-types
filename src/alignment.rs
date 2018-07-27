@@ -79,8 +79,8 @@ impl Alignment {
     /// # Example
     ///
     /// ```
-    /// use bio::alignment::{Alignment,AlignmentMode};
-    /// use bio::alignment::AlignmentOperation::{Match, Subst, Ins, Del};
+    /// use bio_types::alignment::{Alignment,AlignmentMode};
+    /// use bio_types::alignment::AlignmentOperation::{Match, Subst, Ins, Del};
     /// let alignment = Alignment {
     ///     score: 5,
     ///     xstart: 3,
@@ -145,38 +145,6 @@ impl Alignment {
     /// indicates a blank (insertion/deletion). The operations follow
     /// the following convention: '|' for a match, '\' for a mismatch,
     /// '+' for an insertion, 'x' for a deletion and ' ' for clipping
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use bio::alignment::pairwise::*;
-    ///
-    /// let x = b"CCGTCCGGCAAGGG";
-    /// let y = b"AAAAACCGTTGACGGCCAA";
-    /// let score = |a: u8, b: u8| if a == b {1i32} else {-2i32};
-    ///
-    /// let mut aligner = Aligner::with_capacity(x.len(), y.len(), -5, -1, &score);
-    /// let alignment = aligner.semiglobal(x, y);
-    /// println!("Semiglobal: \n{}\n", alignment.pretty(x, y));
-    /// // Semiglobal:
-    /// //      CCGTCCGGCAAGGG
-    /// //      ||||++++\\|\||
-    /// // AAAAACCGT----TGACGGCCAA
-
-    /// let alignment = aligner.local(x, y);
-    /// println!("Local: \n{}\n", alignment.pretty(x, y));
-    /// // Local:
-    /// //      CCGTCCGGCAAGGG
-    /// //      ||||
-    /// // AAAAACCGT          TGACGGCCAA
-
-    /// let alignment = aligner.global(x, y);
-    /// println!("Global: \n{}\n", alignment.pretty(x, y));
-    /// // Global:
-    /// // -----CCGT--CCGGCAAGGG
-    /// // xxxxx||||xx\||||\|++\
-    /// // AAAAACCGTTGACGGCCA--A
-    /// ```
     pub fn pretty(&self, x: TextSlice, y: TextSlice) -> String {
         let mut x_pretty = String::new();
         let mut y_pretty = String::new();
