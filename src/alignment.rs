@@ -145,6 +145,33 @@ impl Alignment {
     /// indicates a blank (insertion/deletion). The operations follow
     /// the following convention: '|' for a match, '\' for a mismatch,
     /// '+' for an insertion, 'x' for a deletion and ' ' for clipping
+    ///
+    /// # Example
+    ///
+    /// If we align the strings "CCGTCCGGCAAGGG" and "AAAAACCGTTGACGGCCAA"
+    /// in various modes, we will get the following output:
+    /// 
+    /// Semiglobal:
+    /// ```c
+    ///         CCGTCCGGCAAGGG
+    ///         ||||++++\\|\||
+    ///    AAAAACCGT----TGACGGCCAA
+    /// ```
+    /// 
+    /// Local:
+    /// ```c
+    ///         CCGTCCGGCAAGGG
+    ///         ||||
+    ///    AAAAACCGT          TGACGGCCAA
+    /// ```
+    /// 
+    /// Global:
+    /// ```c
+    ///    -----CCGT--CCGGCAAGGG
+    ///    xxxxx||||xx\||||\|++\
+    ///    AAAAACCGTTGACGGCCA--A
+    /// ```
+    ///
     pub fn pretty(&self, x: TextSlice, y: TextSlice) -> String {
         let mut x_pretty = String::new();
         let mut y_pretty = String::new();
