@@ -150,21 +150,21 @@ impl Alignment {
     ///
     /// If we align the strings "CCGTCCGGCAAGGG" and "AAAAACCGTTGACGGCCAA"
     /// in various modes, we will get the following output:
-    /// 
+    ///
     /// Semiglobal:
     /// ```c
     ///         CCGTCCGGCAAGGG
     ///         ||||++++\\|\||
     ///    AAAAACCGT----TGACGGCCAA
     /// ```
-    /// 
+    ///
     /// Local:
     /// ```c
     ///         CCGTCCGGCAAGGG
     ///         ||||
     ///    AAAAACCGT          TGACGGCCAA
     /// ```
-    /// 
+    ///
     /// Global:
     /// ```c
     ///    -----CCGT--CCGGCAAGGG
@@ -196,7 +196,7 @@ impl Alignment {
                         inb_pretty.push(' ');
                         y_pretty.push(' ')
                     }
-                    for k in x.iter().take(self.ystart) {
+                    for k in y.iter().take(self.ystart) {
                         y_pretty.push_str(&format!("{}", String::from_utf8_lossy(&[*k])));
                         inb_pretty.push(' ');
                         x_pretty.push(' ')
@@ -431,5 +431,27 @@ mod tests {
             mode: AlignmentMode::Semiglobal,
         };
         assert_eq!(alignment.cigar(false), "1X1=1X");
+    }
+
+    #[test]
+    fn test_pretty() {
+        let alignment = Alignment {
+            score: 1,
+            xstart: 0,
+            ystart: 2,
+            xend: 3,
+            yend: 5,
+            ylen: 7,
+            xlen: 2,
+            operations: vec![Subst, Match, Match],
+            mode: AlignmentMode::Semiglobal,
+        };
+        let pretty = concat!(
+            "  GAT  \n",
+           "  \\||  \n",
+            "CTAATCC\n",
+            "\n\n"
+        );
+        assert_eq!(alignment.pretty(b"GAT", b"CTAATCC"), pretty);
     }
 }
