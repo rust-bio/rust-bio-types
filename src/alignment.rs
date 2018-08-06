@@ -446,12 +446,7 @@ mod tests {
             operations: vec![Subst, Match, Match],
             mode: AlignmentMode::Semiglobal,
         };
-        let pretty = concat!(
-            "  GAT  \n",
-           "  \\||  \n",
-            "CTAATCC\n",
-            "\n\n"
-        );
+        let pretty = concat!("  GAT  \n", "  \\||  \n", "CTAATCC\n", "\n\n");
         assert_eq!(alignment.pretty(b"GAT", b"CTAATCC"), pretty);
     }
 }
