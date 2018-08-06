@@ -150,21 +150,21 @@ impl Alignment {
     ///
     /// If we align the strings "CCGTCCGGCAAGGG" and "AAAAACCGTTGACGGCCAA"
     /// in various modes, we will get the following output:
-    /// 
+    ///
     /// Semiglobal:
     /// ```c
     ///         CCGTCCGGCAAGGG
     ///         ||||++++\\|\||
     ///    AAAAACCGT----TGACGGCCAA
     /// ```
-    /// 
+    ///
     /// Local:
     /// ```c
     ///         CCGTCCGGCAAGGG
     ///         ||||
     ///    AAAAACCGT          TGACGGCCAA
     /// ```
-    /// 
+    ///
     /// Global:
     /// ```c
     ///    -----CCGT--CCGGCAAGGG
