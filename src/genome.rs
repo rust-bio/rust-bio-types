@@ -1,9 +1,7 @@
 use std::ops::Range;
 
-
 pub type Position = u32;
 pub type Length = u32;
-
 
 pub trait AbstractInterval {
     /// Identifier for a genomic contig, e.g., a chromosome
@@ -12,13 +10,11 @@ pub trait AbstractInterval {
     fn range(&self) -> Range<Position>;
 }
 
-
 #[derive(Debug, PartialEq, Eq, Clone, Hash, Serialize, Deserialize)]
 pub struct Interval {
     contig: String,
-    range: Range<Position>
+    range: Range<Position>,
 }
-
 
 impl AbstractInterval for Interval {
     fn contig(&self) -> &str {
@@ -30,7 +26,6 @@ impl AbstractInterval for Interval {
     }
 }
 
-
 pub trait AbstractLocus {
     /// Identifier for a genomic contig, e.g., a chromosome
     fn contig(&self) -> &str;
@@ -38,13 +33,11 @@ pub trait AbstractLocus {
     fn pos(&self) -> Position;
 }
 
-
 #[derive(Debug, PartialEq, Eq, Clone, Hash, Serialize, Deserialize)]
 pub struct Locus {
     contig: String,
-    pos: Position
+    pos: Position,
 }
-
 
 impl AbstractLocus for Locus {
     fn contig(&self) -> &str {

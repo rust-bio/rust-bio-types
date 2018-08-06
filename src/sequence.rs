@@ -1,4 +1,3 @@
-
 /// A DNA base
 pub type Base = u8;
 /// An amino acid

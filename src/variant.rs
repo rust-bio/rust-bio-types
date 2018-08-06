@@ -1,12 +1,10 @@
-use sequence::{Sequence, Base};
 use genome;
-
+use sequence::{Base, Sequence};
 
 /// A trait for providing variant information. This can e.g. be implemented by file readers.
 pub trait AbstractVariant: genome::AbstractLocus {
     fn kind(&self) -> &Kind;
 }
-
 
 /// Possible genomic variants.
 #[derive(Debug, PartialEq, Eq, Clone, Hash, Serialize, Deserialize)]
@@ -17,9 +15,8 @@ pub enum Kind {
     Deletion(genome::Length),
     Duplication(genome::Length),
     Inversion(genome::Length),
-    None
+    None,
 }
-
 
 impl Kind {
     /// Return variant length.
@@ -31,7 +28,7 @@ impl Kind {
             &Kind::Deletion(l) => l,
             &Kind::Duplication(l) => l,
             &Kind::Inversion(l) => l,
-            &Kind::None => 1
+            &Kind::None => 1,
         }
     }
 }
