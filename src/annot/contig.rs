@@ -201,7 +201,7 @@ impl<R> Contig<R, ReqStrand> {
 
     pub fn try_from<S>(x: Contig<R, S>) -> Result<Self, AnnotError>
     where
-        S: Into<Option<ReqStrand>>
+        S: Into<Option<ReqStrand>>,
     {
         match x.strand.into() {
             None => Err(AnnotError::NoStrand),
@@ -249,10 +249,9 @@ impl<R, S> Loc for Contig<R, S> {
             } else {
                 Some(match self.strand().into() {
                     ReqStrand::Forward => Pos::new((), offset, pos.strand()),
-                    ReqStrand::Reverse => Pos::new(
-                        (),
-                        self.length as isize - (offset + 1),
-                        - pos.strand()),
+                    ReqStrand::Reverse => {
+                        Pos::new((), self.length as isize - (offset + 1), -pos.strand())
+                    }
                 })
             }
         }
@@ -262,7 +261,7 @@ impl<R, S> Loc for Contig<R, S> {
     where
         Self::RefID: Clone,
         Self::Strand: Into<ReqStrand> + Copy,
-        T: Neg<Output = T> + Copy
+        T: Neg<Output = T> + Copy,
     {
         let offset = match self.strand().into() {
             ReqStrand::Forward => pos.pos(),
@@ -273,7 +272,7 @@ impl<R, S> Loc for Contig<R, S> {
             Some(Pos::new(
                 self.refid.clone(),
                 self.start + offset,
-                self.strand().into().on_strand(pos.strand())
+                self.strand().into().on_strand(pos.strand()),
             ))
         } else {
             None
@@ -335,7 +334,9 @@ where
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let (refidstr, rest) = break_refid(s)?;
         let (start, end, strandstr) = break_start_end(rest)?;
-        let strand = strandstr.parse::<S>().map_err(|e| ParseAnnotError::ParseStrand(e))?;
+        let strand = strandstr
+            .parse::<S>()
+            .map_err(|e| ParseAnnotError::ParseStrand(e))?;
         if start <= end {
             Ok(Contig::new(
                 R::from(refidstr.to_owned()),

@@ -5,8 +5,8 @@
 
 //! Positions on a named sequence, e.g., 683,946 on chromosome IV.
 
-use std::fmt::{self, Display, Formatter};
 use std::convert::Into;
+use std::fmt::{self, Display, Formatter};
 use std::ops::Neg;
 use std::str::FromStr;
 
@@ -170,7 +170,11 @@ impl<R, S> Loc for Pos<R, S> {
         } else if self.pos != pos.pos {
             None
         } else {
-            Some(Pos::new((), 0, self.strand().into().on_strand(pos.strand())))
+            Some(Pos::new(
+                (),
+                0,
+                self.strand().into().on_strand(pos.strand()),
+            ))
         }
     }
 
@@ -184,7 +188,7 @@ impl<R, S> Loc for Pos<R, S> {
             Some(Pos::new(
                 self.refid.clone(),
                 self.pos,
-                self.strand().into().on_strand(pos.strand())
+                self.strand().into().on_strand(pos.strand()),
             ))
         } else {
             None
@@ -246,7 +250,9 @@ where
         let pos = posstr
             .parse::<isize>()
             .map_err(|e| ParseAnnotError::ParseInt(e))?;
-        let strand = strandstr.parse::<S>().map_err(|e| ParseAnnotError::ParseStrand(e))?;
+        let strand = strandstr
+            .parse::<S>()
+            .map_err(|e| ParseAnnotError::ParseStrand(e))?;
         Ok(Pos::new(R::from(refidstr.to_owned()), pos, strand))
     }
 }

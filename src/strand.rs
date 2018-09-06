@@ -100,7 +100,7 @@ impl FromStr for Strand {
     type Err = StrandError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            ""    => Ok(Strand::Unknown),
+            "" => Ok(Strand::Unknown),
             "(+)" => Ok(Strand::Forward),
             "(-)" => Ok(Strand::Reverse),
             _ => Err(StrandError::ParseError),
@@ -156,7 +156,8 @@ impl ReqStrand {
     ///            ReqStrand::Reverse.on_strand(Strand::Forward));
     /// ```
     pub fn on_strand<T>(&self, x: T) -> T
-        where T: Neg<Output = T>
+    where
+        T: Neg<Output = T>,
     {
         match self {
             ReqStrand::Forward => x,
@@ -228,7 +229,7 @@ impl Neg for NoStrand {
     type Output = NoStrand;
     fn neg(self) -> NoStrand {
         match self {
-            NoStrand::Unknown => NoStrand::Unknown
+            NoStrand::Unknown => NoStrand::Unknown,
         }
     }
 }

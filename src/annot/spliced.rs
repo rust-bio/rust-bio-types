@@ -500,7 +500,8 @@ impl<R, S> Loc for Spliced<R, S> {
                     ReqStrand::Reverse => Pos::new(
                         (),
                         self.exon_total_length() as isize - (offset + 1),
-                        - pos.strand()),
+                        -pos.strand(),
+                    ),
                 };
                 return Some(into);
             }
@@ -514,7 +515,7 @@ impl<R, S> Loc for Spliced<R, S> {
     where
         Self::RefID: Clone,
         Self::Strand: Into<ReqStrand> + Copy,
-        T: Neg<Output = T> + Copy
+        T: Neg<Output = T> + Copy,
     {
         let mut offset = match self.strand().into() {
             ReqStrand::Forward => pos.pos(),
