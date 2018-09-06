@@ -7,7 +7,9 @@
 //! 334,915-334,412.
 
 use std::cmp::{max, min};
+use std::convert::Into;
 use std::fmt::{self, Display, Formatter};
+use std::ops::Neg;
 use std::str::FromStr;
 
 use annot::loc::Loc;
@@ -96,7 +98,7 @@ impl<R, S> Contig<R, S> {
     pub fn with_first_length(pos: &Pos<R, S>, length: usize) -> Result<Self, AnnotError>
     where
         R: Clone,
-        S: Strandedness + Copy,
+        S: Into<Option<ReqStrand>> + Copy,
     {
         if length < 2 {
             Ok(Contig {
@@ -106,7 +108,7 @@ impl<R, S> Contig<R, S> {
                 strand: pos.strand(),
             })
         } else {
-            let start = match pos.strand().try_req_strand() {
+            let start = match pos.strand().into() {
                 None => Err(AnnotError::NoStrand),
                 Some(ReqStrand::Forward) => Ok(pos.start()),
                 Some(ReqStrand::Reverse) => Ok(1 + pos.start() - length as isize),
@@ -199,9 +201,9 @@ impl<R> Contig<R, ReqStrand> {
 
     pub fn try_from<S>(x: Contig<R, S>) -> Result<Self, AnnotError>
     where
-        S: Strandedness,
+        S: Into<Option<ReqStrand>>
     {
-        match x.strand.try_req_strand() {
+        match x.strand.into() {
             None => Err(AnnotError::NoStrand),
             Some(strand) => Ok(Contig {
                 refid: x.refid,
@@ -235,8 +237,8 @@ impl<R, S> Loc for Contig<R, S> {
     fn pos_into<T>(&self, pos: &Pos<Self::RefID, T>) -> Option<Pos<(), T>>
     where
         Self::RefID: Eq,
-        Self::Strand: KnownStrandedness + Copy,
-        T: Strandedness + Copy,
+        Self::Strand: Into<ReqStrand> + Copy,
+        T: Neg<Output = T> + Copy,
     {
         if self.refid != *pos.refid() {
             None
@@ -245,13 +247,12 @@ impl<R, S> Loc for Contig<R, S> {
             if offset < 0 || offset >= self.length as isize {
                 None
             } else {
-                Some(match self.strand().req_strand() {
-                    ReqStrand::Forward => Pos::new((), offset, self.strand().product(pos.strand())),
+                Some(match self.strand().into() {
+                    ReqStrand::Forward => Pos::new((), offset, pos.strand()),
                     ReqStrand::Reverse => Pos::new(
                         (),
                         self.length as isize - (offset + 1),
-                        self.strand().product(pos.strand()),
-                    ),
+                        - pos.strand()),
                 })
             }
         }
@@ -260,10 +261,10 @@ impl<R, S> Loc for Contig<R, S> {
     fn pos_outof<Q, T>(&self, pos: &Pos<Q, T>) -> Option<Pos<Self::RefID, T>>
     where
         Self::RefID: Clone,
-        Self::Strand: KnownStrandedness + Copy,
-        T: Strandedness + Copy,
+        Self::Strand: Into<ReqStrand> + Copy,
+        T: Neg<Output = T> + Copy
     {
-        let offset = match self.strand().req_strand() {
+        let offset = match self.strand().into() {
             ReqStrand::Forward => pos.pos(),
             ReqStrand::Reverse => self.length as isize - (pos.pos() + 1),
         };
@@ -272,7 +273,7 @@ impl<R, S> Loc for Contig<R, S> {
             Some(Pos::new(
                 self.refid.clone(),
                 self.start + offset,
-                self.strand().product(pos.strand()),
+                self.strand().into().on_strand(pos.strand())
             ))
         } else {
             None
@@ -327,14 +328,14 @@ where
 impl<R, S> FromStr for Contig<R, S>
 where
     R: From<String>,
-    S: Strandedness,
+    S: FromStr<Err = StrandError>,
 {
     type Err = ParseAnnotError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let (refidstr, rest) = break_refid(s)?;
-        let (posstr, strand) = S::break_pos_strand(rest).ok_or_else(|| ParseAnnotError::NoStrand)?;
-        let (start, end) = break_start_end(posstr)?;
+        let (start, end, strandstr) = break_start_end(rest)?;
+        let strand = strandstr.parse::<S>().map_err(|e| ParseAnnotError::ParseStrand(e))?;
         if start <= end {
             Ok(Contig::new(
                 R::from(refidstr.to_owned()),

@@ -6,7 +6,8 @@
 //! Data types for strand information on annotations.
 
 use std::fmt::{self, Display, Formatter};
-use std::marker;
+use std::ops::Neg;
+use std::str::FromStr;
 
 /// Strand information.
 #[derive(Debug, Clone, Copy)]
@@ -33,33 +34,10 @@ impl Strand {
         }
     }
 
-    pub fn is_unknown(&self) -> bool {
-        if let Strand::Unknown = *self {
-            true
-        } else {
-            false
-        }
-    }
-}
-
-impl Strandedness for Strand {
-    fn reverse(&self) -> Self {
-        match *self {
-            Strand::Forward => Strand::Reverse,
-            Strand::Reverse => Strand::Forward,
-            Strand::Unknown => Strand::Unknown,
-        }
-    }
-
-    fn try_req_strand(&self) -> Option<ReqStrand> {
-        match *self {
-            Strand::Forward => Some(ReqStrand::Forward),
-            Strand::Reverse => Some(ReqStrand::Reverse),
-            Strand::Unknown => None,
-        }
-    }
-
-    fn strand_symbol(&self) -> &str {
+    /// Symbol denoting the strand. By convention, in BED and GFF
+    /// files, the forward strand is `+`, the reverse strand is `-`,
+    /// and unknown or unspecified strands are `.`.
+    pub fn strand_symbol(&self) -> &str {
         match *self {
             Strand::Forward => "+",
             Strand::Reverse => "-",
@@ -67,11 +45,11 @@ impl Strandedness for Strand {
         }
     }
 
-    fn break_pos_strand(posstr: &str) -> Option<(&str, Self)> {
-        if let Some((pos, reqstr)) = ReqStrand::break_pos_strand(posstr) {
-            Some((pos, Self::from(reqstr)))
+    pub fn is_unknown(&self) -> bool {
+        if let Strand::Unknown = *self {
+            true
         } else {
-            Some((posstr, Strand::Unknown))
+            false
         }
     }
 }
@@ -83,6 +61,17 @@ impl PartialEq for Strand {
             (&Strand::Forward, &Strand::Forward) => true,
             (&Strand::Reverse, &Strand::Reverse) => true,
             _ => false,
+        }
+    }
+}
+
+impl Neg for Strand {
+    type Output = Strand;
+    fn neg(self) -> Strand {
+        match self {
+            Strand::Forward => Strand::Reverse,
+            Strand::Reverse => Strand::Forward,
+            Strand::Unknown => Strand::Unknown,
         }
     }
 }
@@ -107,12 +96,40 @@ impl Display for Strand {
     }
 }
 
+impl FromStr for Strand {
+    type Err = StrandError;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            ""    => Ok(Strand::Unknown),
+            "(+)" => Ok(Strand::Forward),
+            "(-)" => Ok(Strand::Reverse),
+            _ => Err(StrandError::ParseError),
+        }
+    }
+}
+
 impl From<ReqStrand> for Strand {
     fn from(rstr: ReqStrand) -> Self {
         match rstr {
             ReqStrand::Forward => Strand::Forward,
             ReqStrand::Reverse => Strand::Reverse,
         }
+    }
+}
+
+impl From<Option<ReqStrand>> for Strand {
+    fn from(orstr: Option<ReqStrand>) -> Self {
+        match orstr {
+            Some(ReqStrand::Forward) => Strand::Forward,
+            Some(ReqStrand::Reverse) => Strand::Reverse,
+            None => Strand::Unknown,
+        }
+    }
+}
+
+impl From<NoStrand> for Strand {
+    fn from(_: NoStrand) -> Self {
+        Strand::Unknown
     }
 }
 
@@ -123,6 +140,31 @@ pub enum ReqStrand {
     Reverse,
 }
 
+impl ReqStrand {
+    /// Convert the (optional) strand of some other annotation
+    /// according to this strand. That is, reverse the strand of the
+    /// other annotation for `ReqStrand::Reverse` and leave it
+    /// unchanged for `ReqStrand::Forward`.
+    ///
+    /// # Arguments
+    ///
+    /// * `x` is the strand information from some other annotation.
+    ///
+    /// ```
+    /// use bio_types::strand::{ReqStrand,Strand};
+    /// assert_eq!(ReqStrand::Forward.on_strand(Strand::Reverse),
+    ///            ReqStrand::Reverse.on_strand(Strand::Forward));
+    /// ```
+    pub fn on_strand<T>(&self, x: T) -> T
+        where T: Neg<Output = T>
+    {
+        match self {
+            ReqStrand::Forward => x,
+            ReqStrand::Reverse => -x,
+        }
+    }
+}
+
 impl Same for ReqStrand {
     fn same(&self, s1: &Self) -> bool {
         self == s1
@@ -131,47 +173,47 @@ impl Same for ReqStrand {
 
 impl Display for ReqStrand {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        write!(f, "({})", self.strand_symbol())
+        match self {
+            ReqStrand::Forward => write!(f, "(+)"),
+            ReqStrand::Reverse => write!(f, "(-)"),
+        }
     }
 }
 
-impl Strandedness for ReqStrand {
-    fn reverse(&self) -> Self {
-        match *self {
-            ReqStrand::Forward => ReqStrand::Reverse,
-            ReqStrand::Reverse => ReqStrand::Forward,
+impl FromStr for ReqStrand {
+    type Err = StrandError;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "(+)" => Ok(ReqStrand::Forward),
+            "(-)" => Ok(ReqStrand::Reverse),
+            _ => Err(StrandError::ParseError),
         }
     }
+}
 
-    fn try_req_strand(&self) -> Option<ReqStrand> {
-        Some(*self)
-    }
-
-    fn strand_symbol(&self) -> &str {
-        match *self {
-            ReqStrand::Forward => "+",
-            ReqStrand::Reverse => "-",
+impl From<Strand> for Option<ReqStrand> {
+    fn from(strand: Strand) -> Option<ReqStrand> {
+        match strand {
+            Strand::Forward => Some(ReqStrand::Forward),
+            Strand::Reverse => Some(ReqStrand::Reverse),
+            Strand::Unknown => None,
         }
     }
+}
 
-    fn break_pos_strand(posstr: &str) -> Option<(&str, Self)> {
-        if posstr.ends_with("(+)") {
-            if let Some(pos) = posstr.get(0..(posstr.len() - 3)) {
-                return Some((pos, ReqStrand::Forward));
-            }
-        } else if posstr.ends_with("(-)") {
-            if let Some(pos) = posstr.get(0..(posstr.len() - 3)) {
-                return Some((pos, ReqStrand::Reverse));
-            }
-        }
-
+impl From<NoStrand> for Option<ReqStrand> {
+    fn from(_: NoStrand) -> Option<ReqStrand> {
         None
     }
 }
 
-impl KnownStrandedness for ReqStrand {
-    fn req_strand(&self) -> ReqStrand {
-        *self
+impl Neg for ReqStrand {
+    type Output = ReqStrand;
+    fn neg(self) -> ReqStrand {
+        match self {
+            ReqStrand::Forward => ReqStrand::Reverse,
+            ReqStrand::Reverse => ReqStrand::Forward,
+        }
     }
 }
 
@@ -182,30 +224,34 @@ pub enum NoStrand {
     Unknown,
 }
 
+impl Neg for NoStrand {
+    type Output = NoStrand;
+    fn neg(self) -> NoStrand {
+        match self {
+            NoStrand::Unknown => NoStrand::Unknown
+        }
+    }
+}
+
 impl Same for NoStrand {
     fn same(&self, _s1: &Self) -> bool {
         true
     }
 }
 
-impl Display for NoStrand {
-    fn fmt(&self, _f: &mut Formatter) -> fmt::Result {
-        Ok(())
+impl FromStr for NoStrand {
+    type Err = StrandError;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "" => Ok(NoStrand::Unknown),
+            _ => Err(StrandError::ParseError),
+        }
     }
 }
 
-impl Strandedness for NoStrand {
-    fn reverse(&self) -> Self {
-        NoStrand::Unknown
-    }
-    fn try_req_strand(&self) -> Option<ReqStrand> {
-        None
-    }
-    fn strand_symbol(&self) -> &str {
-        "."
-    }
-    fn break_pos_strand(posstr: &str) -> Option<(&str, Self)> {
-        Some((posstr, NoStrand::Unknown))
+impl Display for NoStrand {
+    fn fmt(&self, _f: &mut Formatter) -> fmt::Result {
+        Ok(())
     }
 }
 
@@ -231,63 +277,15 @@ where
     }
 }
 
-/// Strand information for annotations on sequences
-pub trait Strandedness {
-    /// Reversed strand
-    fn reverse(&self) -> Self;
-
-    /// Convert into a `ReqStrand`, indicating a specific, known
-    /// strand. The return is wrapped in an `Option`, so unknown
-    /// strands will return `None`.
-    fn try_req_strand(&self) -> Option<ReqStrand>;
-
-    /// Symbol denoting the strand. By convention, in BED and GFF
-    /// files, the forward strand is `+`, the reverse strand is `-`,
-    /// and unknown or unspecified strands are `.`.
-    fn strand_symbol(&self) -> &str;
-
-    /// Parse a strand designator from the end of a location display
-    /// string.
-    ///
-    /// Strand information can be represented by a `(+)` or `(-)` at
-    /// the end of a display string. This function extracts that
-    /// strand information if it's present, and returns a pair
-    /// comprising the rest of the string and the parsed strand.
-    ///
-    /// When strand information is required but it isn't found in the
-    /// display string, then `None` is returned.
-    ///
-    /// When strand information is optional and it isn't found, then
-    /// the entire input string is returned along with the unknown
-    /// strand designation.
-    fn break_pos_strand(&str) -> Option<(&str, Self)>
-    where
-        Self: marker::Sized;
-}
-
-/// Strand information when the strand is guaranteed to be know.
-pub trait KnownStrandedness: Strandedness {
-    /// Convert into a `ReqStrand`, indicating a specific, known
-    /// strand. As strandedness is guaranteed, this cannot fail.
-    fn req_strand(&self) -> ReqStrand;
-
-    fn product<S>(&self, s: S) -> S
-    where
-        S: Strandedness,
-    {
-        match self.req_strand() {
-            ReqStrand::Forward => s,
-            ReqStrand::Reverse => s.reverse(),
-        }
-    }
-}
-
 quick_error! {
     #[derive(Debug, Clone)]
     pub enum StrandError {
         InvalidChar(invalid_char: char) {
             description("invalid character for strand conversion")
             display("character {:?} can not be converted to a Strand", invalid_char)
+        }
+        ParseError {
+            description("error parsing strand")
         }
     }
 }

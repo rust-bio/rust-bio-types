@@ -55,7 +55,7 @@ fn break_refid(s: &str) -> Result<(&str, &str), ParseAnnotError> {
 // individually.  We can unambiguously parse negative starting and
 // ending positions by breaking on the first '-' occurring after the
 // first character of the range.
-fn break_start_end(s: &str) -> Result<(isize, isize), ParseAnnotError> {
+fn break_start_end(s: &str) -> Result<(isize, isize, &str), ParseAnnotError> {
     let mut breakpt = s
         .get(1..s.len())
         .ok_or_else(|| ParseAnnotError::NoPosition)?
@@ -66,11 +66,13 @@ fn break_start_end(s: &str) -> Result<(isize, isize), ParseAnnotError> {
         .get(0..breakpt)
         .ok_or_else(|| ParseAnnotError::NoPosition)?;
     let start = startstr.parse().map_err(|e| ParseAnnotError::ParseInt(e))?;
-    let endstr = s
+    let rest = s
         .get((breakpt + 1)..(s.len()))
         .ok_or_else(|| ParseAnnotError::NoPosition)?;
+    let endbreak = rest.find(|c: char| !c.is_numeric()).unwrap_or(rest.len());
+    let (endstr, leftover) = rest.split_at(endbreak);
     let end = endstr.parse().map_err(|e| ParseAnnotError::ParseInt(e))?;
-    Ok((start, end))
+    Ok((start, end, leftover))
 }
 
 /// Errors that arise in maniuplating annotations

@@ -6,6 +6,8 @@
 //! Positions on a named sequence, e.g., 683,946 on chromosome IV.
 
 use std::fmt::{self, Display, Formatter};
+use std::convert::Into;
+use std::ops::Neg;
 use std::str::FromStr;
 
 use annot::contig::Contig;
@@ -125,9 +127,9 @@ impl<R> Pos<R, ReqStrand> {
     /// ```
     pub fn try_from<S>(x: Pos<R, S>) -> Result<Self, AnnotError>
     where
-        S: Strandedness,
+        S: Into<Option<ReqStrand>>,
     {
-        match x.strand.try_req_strand() {
+        match x.strand.into() {
             None => Err(AnnotError::NoStrand),
             Some(strand) => Ok(Pos {
                 refid: x.refid,
@@ -160,29 +162,29 @@ impl<R, S> Loc for Pos<R, S> {
     fn pos_into<T>(&self, pos: &Pos<Self::RefID, T>) -> Option<Pos<(), T>>
     where
         Self::RefID: Eq,
-        Self::Strand: KnownStrandedness + Copy,
-        T: Strandedness + Copy,
+        Self::Strand: Into<ReqStrand> + Copy,
+        T: Neg<Output = T> + Copy,
     {
         if self.refid != pos.refid {
             None
         } else if self.pos != pos.pos {
             None
         } else {
-            Some(Pos::new((), 0, self.strand().product(pos.strand())))
+            Some(Pos::new((), 0, self.strand().into().on_strand(pos.strand())))
         }
     }
 
     fn pos_outof<Q, T>(&self, pos: &Pos<Q, T>) -> Option<Pos<Self::RefID, T>>
     where
         Self::RefID: Clone,
-        Self::Strand: KnownStrandedness + Copy,
-        T: Strandedness + Copy,
+        Self::Strand: Into<ReqStrand> + Copy,
+        T: Neg<Output = T> + Copy,
     {
         if pos.pos == 0 {
             Some(Pos::new(
                 self.refid.clone(),
                 self.pos,
-                self.strand().product(pos.strand()),
+                self.strand().into().on_strand(pos.strand())
             ))
         } else {
             None
@@ -233,16 +235,18 @@ where
 impl<R, S> FromStr for Pos<R, S>
 where
     R: From<String>,
-    S: Strandedness,
+    S: FromStr<Err = StrandError>,
 {
     type Err = ParseAnnotError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let (refidstr, rest) = break_refid(s)?;
-        let (posstr, strand) = S::break_pos_strand(rest).ok_or_else(|| ParseAnnotError::NoStrand)?;
+        let posend = rest.find(|c: char| !c.is_numeric()).unwrap_or(rest.len());
+        let (posstr, strandstr) = rest.split_at(posend);
         let pos = posstr
             .parse::<isize>()
             .map_err(|e| ParseAnnotError::ParseInt(e))?;
+        let strand = strandstr.parse::<S>().map_err(|e| ParseAnnotError::ParseStrand(e))?;
         Ok(Pos::new(R::from(refidstr.to_owned()), pos, strand))
     }
 }

@@ -8,7 +8,9 @@
 //! 166,771 through 166,237.
 
 use std::cmp::{max, min};
+use std::convert::Into;
 use std::fmt::{self, Display, Formatter};
+use std::ops::Neg;
 
 use annot::contig::Contig;
 use annot::loc::Loc;
@@ -426,9 +428,9 @@ impl<R> Spliced<R, ReqStrand> {
 
     pub fn try_from<S>(x: Spliced<R, S>) -> Result<Self, AnnotError>
     where
-        S: Strandedness,
+        S: Into<Option<ReqStrand>>,
     {
-        match x.strand.try_req_strand() {
+        match x.strand.into() {
             None => Err(AnnotError::NoStrand),
             Some(strand) => Ok(Spliced {
                 refid: x.refid,
@@ -478,8 +480,8 @@ impl<R, S> Loc for Spliced<R, S> {
     fn pos_into<T>(&self, pos: &Pos<Self::RefID, T>) -> Option<Pos<(), T>>
     where
         Self::RefID: Eq,
-        Self::Strand: KnownStrandedness + Copy,
-        T: Strandedness + Copy,
+        Self::Strand: Into<ReqStrand> + Copy,
+        T: Neg<Output = T> + Copy,
     {
         if self.refid != *pos.refid() {
             return None;
@@ -493,13 +495,12 @@ impl<R, S> Loc for Spliced<R, S> {
         for ex in self.exes() {
             if pos_offset >= ex.start() && pos_offset < ex.end() {
                 let offset = (offset_before + pos_offset - ex.start()) as isize;
-                let into = match self.strand().req_strand() {
-                    ReqStrand::Forward => Pos::new((), offset, self.strand().product(pos.strand())),
+                let into = match self.strand().into() {
+                    ReqStrand::Forward => Pos::new((), offset, pos.strand()),
                     ReqStrand::Reverse => Pos::new(
                         (),
                         self.exon_total_length() as isize - (offset + 1),
-                        self.strand().product(pos.strand()),
-                    ),
+                        - pos.strand()),
                 };
                 return Some(into);
             }
@@ -512,10 +513,10 @@ impl<R, S> Loc for Spliced<R, S> {
     fn pos_outof<Q, T>(&self, pos: &Pos<Q, T>) -> Option<Pos<Self::RefID, T>>
     where
         Self::RefID: Clone,
-        Self::Strand: KnownStrandedness + Copy,
-        T: Strandedness + Copy,
+        Self::Strand: Into<ReqStrand> + Copy,
+        T: Neg<Output = T> + Copy
     {
-        let mut offset = match self.strand().req_strand() {
+        let mut offset = match self.strand().into() {
             ReqStrand::Forward => pos.pos(),
             ReqStrand::Reverse => self.exon_total_length() as isize - (pos.pos() + 1),
         };
@@ -529,7 +530,7 @@ impl<R, S> Loc for Spliced<R, S> {
                 return Some(Pos::new(
                     self.refid.clone(),
                     self.start + ex.start() as isize + offset,
-                    self.strand.product(pos.strand()),
+                    self.strand.into().on_strand(pos.strand()),
                 ));
             }
             offset -= ex.length() as isize;

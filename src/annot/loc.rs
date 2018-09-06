@@ -6,6 +6,8 @@
 //! Trait shared across sequence locations -- spliced, contiguous, or
 //! single-position.
 
+use std::ops::Neg;
+
 use annot::contig::Contig;
 use annot::pos::Pos;
 
@@ -46,8 +48,8 @@ pub trait Loc {
     fn pos_into<T>(&self, pos: &Pos<Self::RefID, T>) -> Option<Pos<(), T>>
     where
         Self::RefID: Eq,
-        Self::Strand: KnownStrandedness + Copy,
-        T: Strandedness + Copy;
+        Self::Strand: Into<ReqStrand> + Copy,
+        T: Neg<Output = T> + Copy;
 
     /// Map a relative position within an annotated location _out of_
     /// that location onto the enclosing reference sequence.
@@ -68,8 +70,8 @@ pub trait Loc {
     fn pos_outof<Q, T>(&self, pos: &Pos<Q, T>) -> Option<Pos<Self::RefID, T>>
     where
         Self::RefID: Clone,
-        Self::Strand: KnownStrandedness + Copy,
-        T: Strandedness + Copy;
+        Self::Strand: Into<ReqStrand> + Copy,
+        T: Neg<Output = T> + Copy;
 
     fn contig_intersection<T>(&self, &Contig<Self::RefID, T>) -> Option<Self>
     where
@@ -99,9 +101,9 @@ pub trait Loc {
     fn first_pos(&self) -> Pos<Self::RefID, Self::Strand>
     where
         Self::RefID: Clone,
-        Self::Strand: KnownStrandedness + Copy,
+        Self::Strand: Into<ReqStrand> + Copy,
     {
-        match self.strand().req_strand() {
+        match self.strand().into() {
             ReqStrand::Forward => Pos::new(self.refid().clone(), self.start(), self.strand()),
             ReqStrand::Reverse => if self.length() == 0 {
                 Pos::new(self.refid().clone(), self.start(), self.strand())
@@ -123,9 +125,9 @@ pub trait Loc {
     fn last_pos(&self) -> Pos<Self::RefID, Self::Strand>
     where
         Self::RefID: Clone,
-        Self::Strand: KnownStrandedness + Copy,
+        Self::Strand: Into<ReqStrand> + Copy,
     {
-        match self.strand().req_strand() {
+        match self.strand().into() {
             ReqStrand::Forward => if self.length() == 0 {
                 Pos::new(self.refid().clone(), self.start(), self.strand())
             } else {
