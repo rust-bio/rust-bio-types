@@ -11,6 +11,7 @@ use std::cmp::{max, min};
 use std::convert::Into;
 use std::fmt::{self, Display, Formatter};
 use std::ops::Neg;
+use std::str::FromStr;
 
 use annot::contig::Contig;
 use annot::loc::Loc;
@@ -591,23 +592,48 @@ where
     }
 }
 
-// impl <R,S> FromStr for Contig<R,S>
-//     where R: From<String>, S: Strandedness
-// {
-//     type Err = ParseError;
+impl<R, S> FromStr for Spliced<R, S>
+where
+    R: From<String>,
+    S: FromStr<Err = StrandError>,
+{
+    type Err = ParseAnnotError;
 
-//     fn from_str(s: &str) -> Result<Self, Self::Err> {
-//         let (refidstr, rest) = break_refid(s)?;
-//         let (posstr, strand) = S::break_pos_strand(rest)
-//             .ok_or_else(|| ParseError::BadStrand(s.to_owned()))?;
-//         let (start, end) = break_start_end(posstr)?;
-//         if start <= end {
-//             Ok( Contig::new(R::from(refidstr.to_owned()), start, (end - start) as usize, strand) )
-//         } else {
-//             Err( ParseError::EndBeforeStart(s.to_owned()) )
-//         }
-//     }
-// }
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let (refidstr, refid_rest) = break_refid(s)?;
+
+        let mut curr = refid_rest;
+        let mut starts = Vec::new();
+        let mut lengths = Vec::new();
+
+        let (first_start, first_end, rest) = break_start_end(curr)?;
+        starts.push(0);
+        lengths.push((first_end - first_start) as usize);
+        curr = rest;
+
+        while curr.starts_with(";") {
+            curr = curr.split_at(1).1;
+            let (next_start, next_end, rest) = break_start_end(curr)?;
+            starts.push((next_start - first_start) as usize);
+            lengths.push((next_end - next_start) as usize);
+            curr = rest;
+        }
+
+        let strand = curr
+            .parse::<S>()
+            .map_err(|e| ParseAnnotError::ParseStrand(e))?;
+
+        let spliced = Spliced::with_lengths_starts(
+            R::from(refidstr.to_owned()),
+            first_start,
+            lengths.as_slice(),
+            starts.as_slice(),
+            strand,
+        ).map_err(|e| ParseAnnotError::Splicing(e))?;
+
+        Ok(spliced)
+    }
+}
 
 impl<R> From<Spliced<R, ReqStrand>> for Spliced<R, Strand> {
     fn from(x: Spliced<R, ReqStrand>) -> Self {
@@ -685,6 +711,13 @@ mod tests {
         assert_eq!(tma20.exon_starts(), vec![0, 638]);
         assert_eq!(tma20.exon_lengths(), vec![535, 11]);
         assert_eq!(tma20.to_string(), "chrV:166236-166771;166874-166885(-)");
+        assert_eq!(
+            tma20,
+            tma20
+                .to_string()
+                .parse::<Spliced<String, ReqStrand>>()
+                .unwrap()
+        );
         let tma20_exons = tma20.exon_contigs();
         assert_eq!(tma20_exons.len(), 2);
         assert_eq!(tma20_exons[0].to_string(), "chrV:166874-166885(-)");
@@ -701,6 +734,13 @@ mod tests {
         assert_eq!(
             rpl7b.to_string(),
             "chrXVI:173151-173162;173571-173665;174072-174702(+)"
+        );
+        assert_eq!(
+            rpl7b,
+            rpl7b
+                .to_string()
+                .parse::<Spliced<String, ReqStrand>>()
+                .unwrap()
         );
         let rpl7b_exons = rpl7b.exon_contigs();
         assert_eq!(rpl7b_exons.len(), 3);
@@ -719,6 +759,12 @@ mod tests {
         assert_eq!(
             tad3.to_string(),
             "chrXII:765265-766073;766129-766181;766249-766358(-)"
+        );
+        assert_eq!(
+            tad3,
+            tad3.to_string()
+                .parse::<Spliced<String, ReqStrand>>()
+                .unwrap()
         );
         let tad3_exons = tad3.exon_contigs();
         assert_eq!(tad3_exons.len(), 3);

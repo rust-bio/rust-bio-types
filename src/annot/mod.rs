@@ -76,6 +76,9 @@ quick_error! {
         ParseStrand(err: strand::StrandError) {
             description("Strand parsing error")
         }
+        Splicing(err: spliced::SplicingError) {
+            description("Bad splicing structure")
+        }
         EndBeforeStart {
             description("Ending position < starting position")
         }
