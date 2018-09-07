@@ -394,38 +394,6 @@ impl<R, S> Spliced<R, S> {
 }
 
 impl<R> Spliced<R, ReqStrand> {
-    /// Extend the annotation by `dist` in the upstream direction on the
-    /// annotated strand.
-    ///
-    /// # Arguments
-    ///
-    /// * `dist` specifies the offset for sliding the position. The
-    /// left, 5'-most end of the spliced will expand for forward-strand
-    /// annotations and the right, 3'-most end will expand for
-    /// reverse-strand annotations.
-    // pub fn extend_upstream(&mut self, dist: usize) {
-    //     self.length += dist;
-    //     if self.strand == ReqStrand::Forward {
-    //         self.start -= dist as isize;
-    //     }
-    // }
-
-    /// Extend the annotation by `dist` in the downstream direction on the
-    /// annotated strand.
-    ///
-    /// # Arguments
-    ///
-    /// * `dist` specifies the offset for sliding the position. The
-    /// right, 3'-most end of the spliced will expand for
-    /// forward-strand annotations and the left, 5'-most end will
-    /// expand for reverse-strand annotations.
-    // pub fn extend_downstream(&mut self, dist: usize) {
-    //     self.length += dist;
-    //     if self.strand == ReqStrand::Reverse {
-    //         self.start -= dist as isize;
-    //     }
-    // }
-
     pub fn try_from<S>(x: Spliced<R, S>) -> Result<Self, AnnotError>
     where
         S: Into<Option<ReqStrand>>,
