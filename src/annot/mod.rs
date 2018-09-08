@@ -28,14 +28,15 @@
 //! The example below shows how to create the _TMA22_ annotation and
 //! find where chrX:461,839 falls within this gene.
 //! ```
+//! # use std::str::FromStr;
 //! # use bio_types::annot::ParseAnnotError;
 //! # fn try_main() -> Result<(), ParseAnnotError> {
 //! use bio_types::annot::contig::Contig;
 //! use bio_types::annot::loc::Loc;
 //! use bio_types::annot::pos::Pos;
 //! use bio_types::strand::{ReqStrand,NoStrand};
-//! let tma22 = "chrX:461829-462426(+)".parse::<Contig<String, ReqStrand>>()?;
-//! let p0 = "chrX:461839".parse::<Pos<String, NoStrand>>()?;
+//! let tma22: Contig<String, ReqStrand> = Contig::from_str("chrX:461829-462426(+)")?;
+//! let p0: Pos<String, NoStrand> = Pos::from_str("chrX:461839")?;
 //! let p0_into = tma22.pos_into(&p0).unwrap_or_else(|| panic!("p0 not within TMA22"));
 //! assert!(p0_into.pos() == 10);
 //! # Ok(())
