@@ -123,16 +123,6 @@ impl<R, S> Contig<R, S> {
         }
     }
 
-    /// Convert into an unstranded sequence location
-    pub fn into_unstranded(self) -> Contig<R, NoStrand> {
-        Contig {
-            refid: self.refid,
-            start: self.start,
-            length: self.length,
-            strand: NoStrand::Unknown,
-        }
-    }
-
     /// Convert into a stranded sequence location on the specified strand
     pub fn into_stranded(self, strand: ReqStrand) -> Contig<R, ReqStrand> {
         Contig {
@@ -196,21 +186,6 @@ impl<R> Contig<R, ReqStrand> {
         self.length += dist;
         if self.strand == ReqStrand::Reverse {
             self.start -= dist as isize;
-        }
-    }
-
-    pub fn try_from<S>(x: Contig<R, S>) -> Result<Self, AnnotError>
-    where
-        S: Into<Option<ReqStrand>>,
-    {
-        match x.strand.into() {
-            None => Err(AnnotError::NoStrand),
-            Some(strand) => Ok(Contig {
-                refid: x.refid,
-                start: x.start,
-                length: x.length,
-                strand: strand,
-            }),
         }
     }
 }
@@ -371,6 +346,28 @@ impl<R> From<Contig<R, NoStrand>> for Contig<R, Strand> {
             start: x.start,
             length: x.length,
             strand: Strand::Unknown,
+        }
+    }
+}
+
+impl<R> From<Contig<R, Strand>> for Contig<R, NoStrand> {
+    fn from(x: Contig<R, Strand>) -> Self {
+        Contig {
+            refid: x.refid,
+            start: x.start,
+            length: x.length,
+            strand: NoStrand::Unknown,
+        }
+    }
+}
+
+impl<R> From<Contig<R, ReqStrand>> for Contig<R, NoStrand> {
+    fn from(x: Contig<R, ReqStrand>) -> Self {
+        Contig {
+            refid: x.refid,
+            start: x.start,
+            length: x.length,
+            strand: NoStrand::Unknown,
         }
     }
 }

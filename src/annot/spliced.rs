@@ -346,17 +346,6 @@ impl<R, S> Spliced<R, S> {
         self.exes().map(|e| e.length()).sum()
     }
 
-    /// Convert into an unstranded sequence location
-    pub fn into_unstranded(self) -> Spliced<R, NoStrand> {
-        Spliced {
-            refid: self.refid,
-            start: self.start,
-            exon_0_length: self.exon_0_length,
-            inexes: self.inexes,
-            strand: NoStrand::Unknown,
-        }
-    }
-
     /// Convert into a stranded sequence location on the specified strand
     pub fn into_stranded(self, strand: ReqStrand) -> Spliced<R, ReqStrand> {
         Spliced {
@@ -395,22 +384,6 @@ impl<R, S> Spliced<R, S> {
 }
 
 impl<R> Spliced<R, ReqStrand> {
-    pub fn try_from<S>(x: Spliced<R, S>) -> Result<Self, AnnotError>
-    where
-        S: Into<Option<ReqStrand>>,
-    {
-        match x.strand.into() {
-            None => Err(AnnotError::NoStrand),
-            Some(strand) => Ok(Spliced {
-                refid: x.refid,
-                start: x.start,
-                exon_0_length: x.exon_0_length,
-                inexes: x.inexes,
-                strand: strand,
-            }),
-        }
-    }
-
     pub fn exon_contigs(&self) -> Vec<Contig<R, ReqStrand>>
     where
         R: Clone,
@@ -658,6 +631,30 @@ impl<R> From<Spliced<R, NoStrand>> for Spliced<R, Strand> {
             exon_0_length: x.exon_0_length,
             inexes: x.inexes,
             strand: Strand::Unknown,
+        }
+    }
+}
+
+impl<R> From<Spliced<R, Strand>> for Spliced<R, NoStrand> {
+    fn from(x: Spliced<R, Strand>) -> Self {
+        Spliced {
+            refid: x.refid,
+            start: x.start,
+            exon_0_length: x.exon_0_length,
+            inexes: x.inexes,
+            strand: NoStrand::Unknown,
+        }
+    }
+}
+
+impl<R> From<Spliced<R, ReqStrand>> for Spliced<R, NoStrand> {
+    fn from(x: Spliced<R, ReqStrand>) -> Self {
+        Spliced {
+            refid: x.refid,
+            start: x.start,
+            exon_0_length: x.exon_0_length,
+            inexes: x.inexes,
+            strand: NoStrand::Unknown,
         }
     }
 }

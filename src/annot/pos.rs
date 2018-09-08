@@ -68,15 +68,6 @@ impl<R, S> Pos<R, S> {
         self.pos
     }
 
-    /// Convert into an unstranded sequence position
-    pub fn into_unstranded(self) -> Pos<R, NoStrand> {
-        Pos {
-            refid: self.refid,
-            pos: self.pos,
-            strand: NoStrand::Unknown,
-        }
-    }
-
     /// Convert into a stranded sequence position on the specified strand
     pub fn into_stranded(self, strand: ReqStrand) -> Pos<R, ReqStrand> {
         Pos {
@@ -110,32 +101,6 @@ impl<R> Pos<R, ReqStrand> {
         match self.strand {
             ReqStrand::Forward => self.pos += dist,
             ReqStrand::Reverse => self.pos -= dist,
-        }
-    }
-
-    /// Convert any annotation into one with a guaranteed
-    /// strandedness.
-    ///
-    /// If the source annotation has no strand, then
-    /// `LocError::NoStrand` is returned instead.
-    ///
-    /// ```
-    /// use bio_types::strand::Strand;
-    /// use bio_types::annot::pos::*;
-    /// use bio_types::strand::ReqStrand;
-    /// let mut start = Pos::new("chrIV".to_owned(), 683946, Strand::Reverse);
-    /// ```
-    pub fn try_from<S>(x: Pos<R, S>) -> Result<Self, AnnotError>
-    where
-        S: Into<Option<ReqStrand>>,
-    {
-        match x.strand.into() {
-            None => Err(AnnotError::NoStrand),
-            Some(strand) => Ok(Pos {
-                refid: x.refid,
-                pos: x.pos,
-                strand: strand,
-            }),
         }
     }
 }
@@ -280,6 +245,26 @@ impl<R> From<Pos<R, NoStrand>> for Pos<R, Strand> {
     }
 }
 
+impl<R> From<Pos<R, Strand>> for Pos<R, NoStrand> {
+    fn from(x: Pos<R, Strand>) -> Self {
+        Pos {
+            refid: x.refid,
+            pos: x.pos,
+            strand: NoStrand::Unknown,
+        }
+    }
+}
+
+impl<R> From<Pos<R, ReqStrand>> for Pos<R, NoStrand> {
+    fn from(x: Pos<R, ReqStrand>) -> Self {
+        Pos {
+            refid: x.refid,
+            pos: x.pos,
+            strand: NoStrand::Unknown,
+        }
+    }
+}
+
 /// Default stranded sequence position on a reference sequence named
 /// by a `String`.
 pub type SeqPosStranded = Pos<String, ReqStrand>;
@@ -313,13 +298,13 @@ mod tests {
     #[test]
     fn strand_conversion() {
         let start = "chrIV:683946(-)".parse::<Pos<String, Strand>>().unwrap();
-        let start_un = start.into_unstranded();
+        let start_un: Pos<String, NoStrand> = start.into();
         assert!(start_un.same(&"chrIV:683946".parse::<Pos<String, NoStrand>>().unwrap()));
         let start_re = start_un.into_stranded(ReqStrand::Reverse);
         assert!(start_re.same(&"chrIV:683946(-)".parse::<Pos<String, ReqStrand>>().unwrap()));
 
         let start = "chrXV:493433(+)".parse::<Pos<String, Strand>>().unwrap();
-        let start_un = start.into_unstranded();
+        let start_un: Pos<String, NoStrand> = start.into();
         assert!(start_un.same(&"chrXV:493433".parse::<Pos<String, NoStrand>>().unwrap()));
         let start_re = start_un.into_stranded(ReqStrand::Forward);
         assert!(start_re.same(&"chrXV:493433(+)".parse::<Pos<String, ReqStrand>>().unwrap()));
