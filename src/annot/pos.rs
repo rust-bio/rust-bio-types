@@ -217,11 +217,19 @@ where
 
         let cap = POS_RE.captures(s).ok_or_else(|| ParseAnnotError::BadAnnot)?;
 
-        let strand = cap.get(3).map_or("", |m| m.as_str()).parse::<S>().map_err(|e| ParseAnnotError::ParseStrand(e))?;
+        let strand = cap
+            .get(3)
+            .map_or("", |m| m.as_str())
+            .parse::<S>()
+            .map_err(|e| ParseAnnotError::ParseStrand(e))?;
 
-        Ok( Pos::new(R::from(cap[1].to_owned()),
-                     cap[2].parse::<isize>().map_err(|e| ParseAnnotError::ParseInt(e))?,
-                     strand) )
+        Ok(Pos::new(
+            R::from(cap[1].to_owned()),
+            cap[2]
+                .parse::<isize>()
+                .map_err(|e| ParseAnnotError::ParseInt(e))?,
+            strand,
+        ))
     }
 }
 

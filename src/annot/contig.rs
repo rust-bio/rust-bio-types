@@ -313,15 +313,29 @@ where
             static ref CONTIG_RE: Regex = Regex::new(r"^(.*):(\d+)-(\d+)(\([+-]\))?$").unwrap();
         }
 
-        let cap = CONTIG_RE.captures(s).ok_or_else(|| ParseAnnotError::BadAnnot)?;
+        let cap = CONTIG_RE
+            .captures(s)
+            .ok_or_else(|| ParseAnnotError::BadAnnot)?;
 
-        let start = cap[2].parse::<isize>().map_err(|e| ParseAnnotError::ParseInt(e))?;
-        let end = cap[3].parse::<isize>().map_err(|e| ParseAnnotError::ParseInt(e))?;
-        let strand = cap.get(4).map_or("", |m| m.as_str()).parse::<S>().map_err(|e| ParseAnnotError::ParseStrand(e))?;
+        let start = cap[2]
+            .parse::<isize>()
+            .map_err(|e| ParseAnnotError::ParseInt(e))?;
+        let end = cap[3]
+            .parse::<isize>()
+            .map_err(|e| ParseAnnotError::ParseInt(e))?;
+        let strand = cap
+            .get(4)
+            .map_or("", |m| m.as_str())
+            .parse::<S>()
+            .map_err(|e| ParseAnnotError::ParseStrand(e))?;
 
         if start <= end {
-            Ok( Contig::new(R::from(cap[1].to_owned()),
-                            start, (end - start) as usize, strand) )
+            Ok(Contig::new(
+                R::from(cap[1].to_owned()),
+                start,
+                (end - start) as usize,
+                strand,
+            ))
         } else {
             Err(ParseAnnotError::EndBeforeStart)
         }

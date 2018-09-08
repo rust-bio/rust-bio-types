@@ -576,18 +576,27 @@ where
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         lazy_static! {
-            static ref SPLICED_RE: Regex = Regex::new(r"^(.*):(\d+)-(\d+)((?:;\d+-\d+)*)(\([+-]\))?$").unwrap();
+            static ref SPLICED_RE: Regex =
+                Regex::new(r"^(.*):(\d+)-(\d+)((?:;\d+-\d+)*)(\([+-]\))?$").unwrap();
             static ref EXON_RE: Regex = Regex::new(r";(\d+)-(\d+)").unwrap();
         }
 
-        let cap = SPLICED_RE.captures(s).ok_or_else(|| ParseAnnotError::BadAnnot)?;
+        let cap = SPLICED_RE
+            .captures(s)
+            .ok_or_else(|| ParseAnnotError::BadAnnot)?;
 
         let mut starts = Vec::new();
         let mut lengths = Vec::new();
 
-        let first_start = cap[2].parse::<isize>().map_err(|e| ParseAnnotError::ParseInt(e))?;
-        let first_end = cap[3].parse::<isize>().map_err(|e| ParseAnnotError::ParseInt(e))?;
-        let strand = cap[5].parse::<S>().map_err(|e| ParseAnnotError::ParseStrand(e))?;
+        let first_start = cap[2]
+            .parse::<isize>()
+            .map_err(|e| ParseAnnotError::ParseInt(e))?;
+        let first_end = cap[3]
+            .parse::<isize>()
+            .map_err(|e| ParseAnnotError::ParseInt(e))?;
+        let strand = cap[5]
+            .parse::<S>()
+            .map_err(|e| ParseAnnotError::ParseStrand(e))?;
 
         starts.push(0);
         lengths.push((first_end - first_start) as usize);
@@ -595,12 +604,15 @@ where
         let exon_caps = EXON_RE.captures_iter(&cap[4]);
 
         for exon_cap in exon_caps {
-            let next_start = exon_cap[1].parse::<isize>().map_err(|e| ParseAnnotError::ParseInt(e))?;
-            let next_end = exon_cap[2].parse::<isize>().map_err(|e| ParseAnnotError::ParseInt(e))?;
+            let next_start = exon_cap[1]
+                .parse::<isize>()
+                .map_err(|e| ParseAnnotError::ParseInt(e))?;
+            let next_end = exon_cap[2]
+                .parse::<isize>()
+                .map_err(|e| ParseAnnotError::ParseInt(e))?;
             starts.push((next_start - first_start) as usize);
             lengths.push((next_end - next_start) as usize);
         }
-
 
         let spliced = Spliced::with_lengths_starts(
             R::from(cap[1].to_owned()),
@@ -609,7 +621,7 @@ where
             starts.as_slice(),
             strand,
         ).map_err(|e| ParseAnnotError::Splicing(e))?;
-        Ok( spliced )
+        Ok(spliced)
     }
 }
 
