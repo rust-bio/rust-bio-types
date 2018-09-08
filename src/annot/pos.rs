@@ -10,6 +10,8 @@ use std::fmt::{self, Display, Formatter};
 use std::ops::Neg;
 use std::str::FromStr;
 
+use regex::Regex;
+
 use annot::contig::Contig;
 use annot::loc::Loc;
 use annot::*;
@@ -209,16 +211,17 @@ where
     type Err = ParseAnnotError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let (refidstr, rest) = break_refid(s)?;
-        let posend = rest.find(|c: char| !c.is_numeric()).unwrap_or(rest.len());
-        let (posstr, strandstr) = rest.split_at(posend);
-        let pos = posstr
-            .parse::<isize>()
-            .map_err(|e| ParseAnnotError::ParseInt(e))?;
-        let strand = strandstr
-            .parse::<S>()
-            .map_err(|e| ParseAnnotError::ParseStrand(e))?;
-        Ok(Pos::new(R::from(refidstr.to_owned()), pos, strand))
+        lazy_static! {
+            static ref POS_RE: Regex = Regex::new(r"^(.*):(\d+)(\([+-]\))?$").unwrap();
+        }
+
+        let cap = POS_RE.captures(s).ok_or_else(|| ParseAnnotError::BadAnnot)?;
+
+        let strand = cap.get(3).map_or("", |m| m.as_str()).parse::<S>().map_err(|e| ParseAnnotError::ParseStrand(e))?;
+
+        Ok( Pos::new(R::from(cap[1].to_owned()),
+                     cap[2].parse::<isize>().map_err(|e| ParseAnnotError::ParseInt(e))?,
+                     strand) )
     }
 }
 

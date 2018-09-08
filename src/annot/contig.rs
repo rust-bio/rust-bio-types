@@ -12,6 +12,8 @@ use std::fmt::{self, Display, Formatter};
 use std::ops::Neg;
 use std::str::FromStr;
 
+use regex::Regex;
+
 use annot::loc::Loc;
 use annot::pos::Pos;
 use annot::*;
@@ -307,18 +309,19 @@ where
     type Err = ParseAnnotError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let (refidstr, rest) = break_refid(s)?;
-        let (start, end, strandstr) = break_start_end(rest)?;
-        let strand = strandstr
-            .parse::<S>()
-            .map_err(|e| ParseAnnotError::ParseStrand(e))?;
+        lazy_static! {
+            static ref CONTIG_RE: Regex = Regex::new(r"^(.*):(\d+)-(\d+)(\([+-]\))?$").unwrap();
+        }
+
+        let cap = CONTIG_RE.captures(s).ok_or_else(|| ParseAnnotError::BadAnnot)?;
+
+        let start = cap[2].parse::<isize>().map_err(|e| ParseAnnotError::ParseInt(e))?;
+        let end = cap[3].parse::<isize>().map_err(|e| ParseAnnotError::ParseInt(e))?;
+        let strand = cap.get(4).map_or("", |m| m.as_str()).parse::<S>().map_err(|e| ParseAnnotError::ParseStrand(e))?;
+
         if start <= end {
-            Ok(Contig::new(
-                R::from(refidstr.to_owned()),
-                start,
-                (end - start) as usize,
-                strand,
-            ))
+            Ok( Contig::new(R::from(cap[1].to_owned()),
+                            start, (end - start) as usize, strand) )
         } else {
             Err(ParseAnnotError::EndBeforeStart)
         }
