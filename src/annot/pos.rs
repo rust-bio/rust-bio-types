@@ -7,7 +7,9 @@
 
 use std::convert::Into;
 use std::fmt::{self, Display, Formatter};
+use std::ops::AddAssign;
 use std::ops::Neg;
+use std::ops::SubAssign;
 use std::str::FromStr;
 
 use regex::Regex;
@@ -80,7 +82,11 @@ impl<R, S> Pos<R, S> {
     }
 }
 
-impl<R> Pos<R, ReqStrand> {
+impl<R, T> AddAssign<T> for Pos<R, ReqStrand>
+where
+    isize: AddAssign<T>,
+    isize: SubAssign<T>,
+{
     /// Slide the reference position by an offset on the strand of the
     /// annotation.
     ///
@@ -96,13 +102,44 @@ impl<R> Pos<R, ReqStrand> {
     /// use bio_types::strand::ReqStrand;
     /// let mut start = Pos::new("chrIV".to_owned(), 683946, ReqStrand::Reverse);
     /// assert_eq!(start.to_string(), "chrIV:683946(-)");
-    /// start.slide_on_strand(100);
+    /// start += 100;
     /// assert_eq!(start.to_string(), "chrIV:683846(-)");
     /// ```
-    pub fn slide_on_strand(&mut self, dist: isize) {
+    fn add_assign(&mut self, dist: T) {
         match self.strand {
-            ReqStrand::Forward => self.pos += dist,
-            ReqStrand::Reverse => self.pos -= dist,
+            ReqStrand::Forward => self.pos += dist.into(),
+            ReqStrand::Reverse => self.pos -= dist.into(),
+        }
+    }
+}
+
+impl<R, T> SubAssign<T> for Pos<R, ReqStrand>
+where
+    isize: AddAssign<T>,
+    isize: SubAssign<T>,
+{
+    /// Slide the reference position by an offset on the strand of the
+    /// annotation.
+    ///
+    /// # Arguments
+    ///
+    /// * `dist` specifies the offset for sliding the position. A
+    /// positive `dist` will numerically decrease the position for
+    /// forward-strand features and increase it for reverse-strand
+    /// features.
+    ///
+    /// ```
+    /// use bio_types::annot::pos::Pos;
+    /// use bio_types::strand::ReqStrand;
+    /// let mut start = Pos::new("chrIV".to_owned(), 683946, ReqStrand::Reverse);
+    /// assert_eq!(start.to_string(), "chrIV:683946(-)");
+    /// start -= 100;
+    /// assert_eq!(start.to_string(), "chrIV:684046(-)");
+    /// ```
+    fn sub_assign(&mut self, dist: T) {
+        match self.strand {
+            ReqStrand::Forward => self.pos -= dist.into(),
+            ReqStrand::Reverse => self.pos += dist.into(),
         }
     }
 }
