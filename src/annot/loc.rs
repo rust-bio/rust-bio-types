@@ -13,6 +13,13 @@ use annot::pos::Pos;
 
 use strand::*;
 
+/// A trait for a sequence location -- a defined region on a named
+/// chromosome (or other reference sequence), which may also have
+/// defined strand information. The trait is generic over the type of
+/// identifier for the reference sequence (allowing owned strings,
+/// sequence IDs, and other options) and the strand information
+/// (allowing type-level distinction between stranded and unstranded
+/// annotations).
 pub trait Loc {
     type RefID;
     type Strand;
