@@ -252,7 +252,9 @@ where
             static ref POS_RE: Regex = Regex::new(r"^(.*):(\d+)(\([+-]\))?$").unwrap();
         }
 
-        let cap = POS_RE.captures(s).ok_or_else(|| ParseAnnotError::BadAnnot)?;
+        let cap = POS_RE
+            .captures(s)
+            .ok_or_else(|| ParseAnnotError::BadAnnot)?;
 
         let strand = cap
             .get(3)
