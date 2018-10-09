@@ -41,13 +41,11 @@ pub enum AlignmentMode {
     Custom,
 }
 
-
 impl Default for AlignmentMode {
     fn default() -> Self {
         AlignmentMode::Global
     }
 }
-
 
 /// We consider alignment between two sequences x and  y. x is the query or read sequence
 /// and y is the reference or template sequence. An alignment, consisting of a score,
