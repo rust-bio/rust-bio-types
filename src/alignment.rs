@@ -257,7 +257,7 @@ impl Alignment {
 
                         y_pretty.push(' ')
                     },
-                    AlignmentOperation::Yclip(len) => for k in x.iter().take(len) {
+                    AlignmentOperation::Yclip(len) => for k in y.iter().take(len) {
                         y_pretty.push_str(&format!("{}", String::from_utf8_lossy(&[*k])));
                         y_i += 1;
 
@@ -456,5 +456,18 @@ mod tests {
         };
         let pretty = concat!("  GAT  \n", "  \\||  \n", "CTAATCC\n", "\n\n");
         assert_eq!(alignment.pretty(b"GAT", b"CTAATCC"), pretty);
+        let alignment = Alignment {
+            score: 5,
+            xstart: 0,
+            ystart: 5,
+            xend: 4,
+            yend: 10,
+            ylen: 10,
+            xlen: 5,
+            operations: vec![Yclip(5), Match, Subst, Subst, Ins, Del, Del, Xclip(1)],
+            mode: AlignmentMode::Custom,
+        };
+        let pretty = concat!("     AAAA--A\n     |\\\\+xx \nTTTTTTTT-TT \n\n\n");
+        assert_eq!(alignment.pretty(b"AAAAA", b"TTTTTTTTTT"), pretty);
     }
 }
