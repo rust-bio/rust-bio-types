@@ -4,3 +4,10 @@ pub type Base = u8;
 pub type AminoAcid = u8;
 /// A biological sequence
 pub type Sequence = Vec<u8>;
+
+
+pub trait SequenceRead {
+    fn base(&self, i: usize) -> u8;
+    fn qual(&self, i: usize) -> u8;
+    fn len(&self) -> usize;
+}
