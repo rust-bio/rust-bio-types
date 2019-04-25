@@ -112,15 +112,17 @@ pub trait Loc {
     {
         match self.strand().into() {
             ReqStrand::Forward => Pos::new(self.refid().clone(), self.start(), self.strand()),
-            ReqStrand::Reverse => if self.length() == 0 {
-                Pos::new(self.refid().clone(), self.start(), self.strand())
-            } else {
-                Pos::new(
-                    self.refid().clone(),
-                    self.start() + (self.length() as isize) - 1,
-                    self.strand(),
-                )
-            },
+            ReqStrand::Reverse => {
+                if self.length() == 0 {
+                    Pos::new(self.refid().clone(), self.start(), self.strand())
+                } else {
+                    Pos::new(
+                        self.refid().clone(),
+                        self.start() + (self.length() as isize) - 1,
+                        self.strand(),
+                    )
+                }
+            }
         }
     }
 
@@ -135,15 +137,17 @@ pub trait Loc {
         Self::Strand: Into<ReqStrand> + Copy,
     {
         match self.strand().into() {
-            ReqStrand::Forward => if self.length() == 0 {
-                Pos::new(self.refid().clone(), self.start(), self.strand())
-            } else {
-                Pos::new(
-                    self.refid().clone(),
-                    self.start() + (self.length() as isize) - 1,
-                    self.strand(),
-                )
-            },
+            ReqStrand::Forward => {
+                if self.length() == 0 {
+                    Pos::new(self.refid().clone(), self.start(), self.strand())
+                } else {
+                    Pos::new(
+                        self.refid().clone(),
+                        self.start() + (self.length() as isize) - 1,
+                        self.strand(),
+                    )
+                }
+            }
             ReqStrand::Reverse => Pos::new(self.refid().clone(), self.start(), self.strand()),
         }
     }

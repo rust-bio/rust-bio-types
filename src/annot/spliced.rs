@@ -529,7 +529,8 @@ impl<R, S> Loc for Spliced<R, S> {
                 &exon_lengths,
                 &exon_starts,
                 self.strand,
-            ).unwrap_or_else(|e| {
+            )
+            .unwrap_or_else(|e| {
                 panic!(
                     "Creating intersection spliced: {:?} for {:?} {:?}",
                     e, exon_lengths, exon_starts
@@ -620,7 +621,8 @@ where
             lengths.as_slice(),
             starts.as_slice(),
             strand,
-        ).map_err(|e| ParseAnnotError::Splicing(e))?;
+        )
+        .map_err(|e| ParseAnnotError::Splicing(e))?;
         Ok(spliced)
     }
 }
@@ -721,7 +723,8 @@ mod tests {
             &vec![535, 11],
             &vec![0, 638],
             ReqStrand::Reverse,
-        ).unwrap();
+        )
+        .unwrap();
         assert_eq!(tma20.exon_starts(), vec![0, 638]);
         assert_eq!(tma20.exon_lengths(), vec![535, 11]);
         assert_eq!(tma20.to_string(), "chrV:166236-166771;166874-166885(-)");
@@ -744,7 +747,8 @@ mod tests {
             &vec![11, 94, 630],
             &vec![0, 420, 921],
             ReqStrand::Forward,
-        ).unwrap();
+        )
+        .unwrap();
         assert_eq!(
             rpl7b.to_string(),
             "chrXVI:173151-173162;173571-173665;174072-174702(+)"
@@ -769,7 +773,8 @@ mod tests {
             &vec![808, 52, 109],
             &vec![0, 864, 984],
             ReqStrand::Reverse,
-        ).unwrap();
+        )
+        .unwrap();
         assert_eq!(
             tad3.to_string(),
             "chrXII:765265-766073;766129-766181;766249-766358(-)"
@@ -819,7 +824,8 @@ mod tests {
             &vec![11, 94, 630],
             &vec![0, 420, 921],
             ReqStrand::Forward,
-        ).unwrap();
+        )
+        .unwrap();
         let p0_into = Pos::new((), -1, ReqStrand::Forward);
         assert!(None.same(&rpl7b.pos_outof(&p0_into)));
 
@@ -847,7 +853,8 @@ mod tests {
             &vec![808, 52, 109],
             &vec![0, 864, 984],
             ReqStrand::Reverse,
-        ).unwrap();
+        )
+        .unwrap();
 
         let p0_into = Pos::new((), -1, ReqStrand::Forward);
         assert!(None.same(&tad3.pos_outof(&p0_into)));
@@ -893,7 +900,8 @@ mod tests {
             &vec![11, 94, 630],
             &vec![0, 420, 921],
             ReqStrand::Forward,
-        ).unwrap();
+        )
+        .unwrap();
 
         test_contig_ixn(
             &rpl7b,
