@@ -1083,5 +1083,4 @@ mod tests {
         test_contig_ixn(&rpl7b, "chrXVI:173200-173300(+)", None);
         test_contig_ixn(&rpl7b, "chrXVI:173800-174000(+)", None);
     }
-
 }
