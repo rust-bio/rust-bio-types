@@ -141,6 +141,15 @@ pub enum ReqStrand {
 }
 
 impl ReqStrand {
+    /// Symbol denoting the strand. By convention, in BED and GFF
+    /// files, the forward strand is `+` and the reverse strand is `-`.
+    pub fn strand_symbol(&self) -> &str {
+        match *self {
+            ReqStrand::Forward => "+",
+            ReqStrand::Reverse => "-",
+        }
+    }
+
     /// Convert the (optional) strand of some other annotation
     /// according to this strand. That is, reverse the strand of the
     /// other annotation for `ReqStrand::Reverse` and leave it
