@@ -52,7 +52,7 @@ pub mod pos;
 pub mod refids;
 pub mod spliced;
 
-/// Errors that arise in parsing annotations.
+// Errors that arise in parsing annotations.
 quick_error! {
     #[derive(Debug, Clone)]
     pub enum ParseAnnotError {
@@ -74,7 +74,7 @@ quick_error! {
     }
 }
 
-/// Errors that arise in maniuplating annotations
+// Errors that arise in maniuplating annotations
 quick_error! {
     #[derive(Debug, Clone)]
     pub enum AnnotError {
