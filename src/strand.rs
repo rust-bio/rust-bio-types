@@ -324,5 +324,17 @@ mod tests {
         assert_eq!(Strand::from_char(&'-').unwrap(), Strand::Reverse);
         assert!(Strand::from_char(&'.').unwrap().is_unknown());
         assert!(Strand::from_char(&'o').is_err());
+        assert_eq!(Strand::Forward.strand_symbol(), "+");
+        assert_eq!(Strand::Reverse.strand_symbol(), "-");
+        assert_eq!(Strand::Unknown.strand_symbol(), ".");
+    }
+
+    #[test]
+    fn test_req_strand() {
+        assert_eq!(ReqStrand::from_char(&'+').unwrap(), ReqStrand::Forward);
+        assert_eq!(ReqStrand::from_char(&'-').unwrap(), ReqStrand::Reverse);
+        assert!(ReqStrand::from_char(&'o').is_err());
+        assert_eq!(ReqStrand::Forward.strand_symbol(), "+");
+        assert_eq!(ReqStrand::Reverse.strand_symbol(), "-");
     }
 }
