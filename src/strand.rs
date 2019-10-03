@@ -141,6 +141,20 @@ pub enum ReqStrand {
 }
 
 impl ReqStrand {
+    /// Returns a `ReqStrand` enum representing the given char.
+    ///
+    /// The mapping is as follows:
+    ///     * '+', 'f', or 'F' becomes `Strand::Forward`
+    ///     * '-', 'r', or 'R' becomes `Strand::Reverse`
+    ///     * Any other inputs will return an `Err(StrandError::InvalidChar)`
+    pub fn from_char(strand_char: &char) -> Result<ReqStrand, StrandError> {
+        match *strand_char {
+            '+' | 'f' | 'F' => Ok(ReqStrand::Forward),
+            '-' | 'r' | 'R' => Ok(ReqStrand::Reverse),
+            invalid => Err(StrandError::InvalidChar(invalid)),
+        }
+    }
+
     /// Symbol denoting the strand. By convention, in BED and GFF
     /// files, the forward strand is `+` and the reverse strand is `-`.
     pub fn strand_symbol(&self) -> &str {
