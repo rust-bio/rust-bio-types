@@ -4,6 +4,8 @@ extern crate serde_derive;
 extern crate quick_error;
 #[macro_use]
 extern crate lazy_static;
+#[macro_use]
+extern crate derive_new;
 
 extern crate regex;
 
