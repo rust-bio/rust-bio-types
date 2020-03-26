@@ -8,14 +8,19 @@ pub trait AbstractInterval {
     fn contig(&self) -> &str;
     /// Interval on the contig
     fn range(&self) -> Range<Position>;
-    /// Mutable reference to interval on the contig
-    fn range_mut(&mut self) -> &mut Range<Position>;
 }
 
 #[derive(new, Debug, PartialEq, Eq, Clone, Hash, Serialize, Deserialize)]
 pub struct Interval {
     contig: String,
     range: Range<Position>,
+}
+
+impl Interval {
+    /// Mutable reference to interval on the contig
+    pub fn range_mut(&mut self) -> &mut Range<Position> {
+        &mut self.range
+    }
 }
 
 impl AbstractInterval for Interval {
@@ -26,10 +31,6 @@ impl AbstractInterval for Interval {
     fn range(&self) -> Range<Position> {
         self.range.clone()
     }
-
-    fn range_mut(&mut self) -> &mut Range<Position> {
-        &mut self.range
-    }
 }
 
 pub trait AbstractLocus {
@@ -37,15 +38,19 @@ pub trait AbstractLocus {
     fn contig(&self) -> &str;
     /// Position on the contig
     fn pos(&self) -> Position;
-
-    /// Mutable reference to position on the contig
-    fn pos_mut(&mut self) -> &mut Position;
 }
 
 #[derive(new, Debug, PartialEq, Eq, Clone, Hash, Serialize, Deserialize)]
 pub struct Locus {
     contig: String,
     pos: Position,
+}
+
+impl Locus {
+    /// Mutable reference to position.
+    fn pos_mut(&mut self) -> &mut Position {
+        &mut self.pos
+    }
 }
 
 impl AbstractLocus for Locus {
@@ -55,9 +60,5 @@ impl AbstractLocus for Locus {
 
     fn pos(&self) -> Position {
         self.pos
-    }
-
-    fn pos_mut(&mut self) -> &mut Position {
-        &mut self.pos
     }
 }
