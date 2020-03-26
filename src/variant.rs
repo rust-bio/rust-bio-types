@@ -23,8 +23,8 @@ impl Kind {
     pub fn len(&self) -> genome::Length {
         match self {
             &Kind::SNV(_) => 1,
-            &Kind::MNV(ref s) => s.len() as u32,
-            &Kind::Insertion(ref s) => s.len() as u32,
+            &Kind::MNV(ref s) => s.len() as u64,
+            &Kind::Insertion(ref s) => s.len() as u64,
             &Kind::Deletion(l) => l,
             &Kind::Duplication(l) => l,
             &Kind::Inversion(l) => l,
