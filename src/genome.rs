@@ -1,7 +1,7 @@
 use std::ops::Range;
 
-pub type Position = u32;
-pub type Length = u32;
+pub type Position = u64;
+pub type Length = u64;
 
 pub trait AbstractInterval {
     /// Identifier for a genomic contig, e.g., a chromosome
