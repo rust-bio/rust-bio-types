@@ -1,3 +1,4 @@
+use std::cmp;
 use std::ops::Range;
 
 pub type Position = u64;
@@ -14,6 +15,23 @@ pub trait AbstractInterval {
 pub struct Interval {
     contig: String,
     range: Range<Position>,
+}
+
+impl PartialOrd for Interval {
+    fn partial_cmp(&self, other: &Self) -> Option<cmp::Ordering> {
+        Some(self.contig.cmp(&other.contig).then_with(|| {
+            self.range
+                .start
+                .cmp(&other.range.start)
+                .then_with(|| self.range.end.cmp(&other.range.end))
+        }))
+    }
+}
+
+impl Ord for Interval {
+    fn cmp(&self, other: &Self) -> cmp::Ordering {
+        self.partial_cmp(other).unwrap()
+    }
 }
 
 impl Interval {
@@ -40,7 +58,7 @@ pub trait AbstractLocus {
     fn pos(&self) -> Position;
 }
 
-#[derive(new, Debug, PartialEq, Eq, Clone, Hash, Serialize, Deserialize)]
+#[derive(new, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Hash, Serialize, Deserialize)]
 pub struct Locus {
     contig: String,
     pos: Position,
@@ -48,7 +66,7 @@ pub struct Locus {
 
 impl Locus {
     /// Mutable reference to position.
-    fn pos_mut(&mut self) -> &mut Position {
+    pub fn pos_mut(&mut self) -> &mut Position {
         &mut self.pos
     }
 }
