@@ -141,6 +141,29 @@ pub enum ReqStrand {
 }
 
 impl ReqStrand {
+    /// Returns a `ReqStrand` enum representing the given char.
+    ///
+    /// The mapping is as follows:
+    ///     * '+', 'f', or 'F' becomes `Strand::Forward`
+    ///     * '-', 'r', or 'R' becomes `Strand::Reverse`
+    ///     * Any other inputs will return an `Err(StrandError::InvalidChar)`
+    pub fn from_char(strand_char: &char) -> Result<ReqStrand, StrandError> {
+        match *strand_char {
+            '+' | 'f' | 'F' => Ok(ReqStrand::Forward),
+            '-' | 'r' | 'R' => Ok(ReqStrand::Reverse),
+            invalid => Err(StrandError::InvalidChar(invalid)),
+        }
+    }
+
+    /// Symbol denoting the strand. By convention, in BED and GFF
+    /// files, the forward strand is `+` and the reverse strand is `-`.
+    pub fn strand_symbol(&self) -> &str {
+        match *self {
+            ReqStrand::Forward => "+",
+            ReqStrand::Reverse => "-",
+        }
+    }
+
     /// Convert the (optional) strand of some other annotation
     /// according to this strand. That is, reverse the strand of the
     /// other annotation for `ReqStrand::Reverse` and leave it
@@ -301,5 +324,17 @@ mod tests {
         assert_eq!(Strand::from_char(&'-').unwrap(), Strand::Reverse);
         assert!(Strand::from_char(&'.').unwrap().is_unknown());
         assert!(Strand::from_char(&'o').is_err());
+        assert_eq!(Strand::Forward.strand_symbol(), "+");
+        assert_eq!(Strand::Reverse.strand_symbol(), "-");
+        assert_eq!(Strand::Unknown.strand_symbol(), ".");
+    }
+
+    #[test]
+    fn test_req_strand() {
+        assert_eq!(ReqStrand::from_char(&'+').unwrap(), ReqStrand::Forward);
+        assert_eq!(ReqStrand::from_char(&'-').unwrap(), ReqStrand::Reverse);
+        assert!(ReqStrand::from_char(&'o').is_err());
+        assert_eq!(ReqStrand::Forward.strand_symbol(), "+");
+        assert_eq!(ReqStrand::Reverse.strand_symbol(), "-");
     }
 }
