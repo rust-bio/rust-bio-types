@@ -9,6 +9,15 @@ pub trait AbstractInterval {
     fn contig(&self) -> &str;
     /// Interval on the contig
     fn range(&self) -> Range<Position>;
+    /// Return true if interval contains given locus.
+    fn contains<L>(&self, locus: L) -> bool
+    where
+        L: AbstractLocus,
+    {
+        self.contig() == locus.contig()
+            && locus.pos() >= self.range().start
+            && locus.pos() < self.range().end
+    }
 }
 
 #[derive(new, Debug, PartialEq, Eq, Clone, Hash, Serialize, Deserialize)]
