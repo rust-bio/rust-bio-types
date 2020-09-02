@@ -37,6 +37,8 @@ use std::ops::Deref;
 ///   assert_eq!(Rc::strong_count(&chr_i), 7);
 /// }
 /// ```
+#[cfg_attr(feature = "serialize", derive(Serialize, Deserialize))]
+#[derive(Debug)]
 pub struct RefIDSet<R> {
     refids: HashMap<String, R>,
 }

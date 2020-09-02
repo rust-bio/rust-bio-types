@@ -90,12 +90,15 @@ mod inex {
     }
 
     // Iterator over the Ex exons from lowest to highest coordinate
+    #[cfg_attr(feature = "serialize", derive(Serialize, Deserialize))]
+    #[derive(Debug)]
     pub struct Exes<'a> {
         state: ExesState,
         curr_start: usize,
         rest: Iter<'a, InEx>,
     }
 
+    #[derive(Debug)]
     enum ExesState {
         FirstExon(usize),
         LaterExon,
@@ -163,6 +166,8 @@ mod inex {
     }
 
     // Iterator over the Ex introns from lowest to highest coordinate
+    #[cfg_attr(feature = "serialize", derive(Serialize, Deserialize))]
+    #[derive(Debug)]
     pub struct Ins<'a> {
         curr_start: usize,
         rest: Iter<'a, InEx>,
