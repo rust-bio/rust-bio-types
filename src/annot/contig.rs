@@ -43,6 +43,7 @@ use strand::*;
 /// # }
 /// # fn main() { try_main().unwrap(); }
 /// ```
+#[cfg_attr(feature = "serialize", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub struct Contig<R, S> {
     refid: R,

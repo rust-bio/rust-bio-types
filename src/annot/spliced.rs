@@ -37,6 +37,7 @@ mod inex {
 
     use super::SplicingError;
 
+    #[cfg_attr(feature = "serialize", derive(Serialize, Deserialize))]
     #[derive(Debug, Clone, Hash, PartialEq, Eq)]
     pub struct InEx {
         intron_length: usize,
@@ -69,6 +70,7 @@ mod inex {
 
     // Represent just the start (relative to the start of the location) and length of exons
     // Useful for internal coordinate math
+    #[cfg_attr(feature = "serialize", derive(Serialize, Deserialize))]
     #[derive(Debug, Clone, Hash, PartialEq, Eq)]
     pub struct Ex {
         start: usize,
@@ -140,6 +142,7 @@ mod inex {
 
     // Represent just the start (relative to the start of the location) and length of introns
     // Useful for internal coordinate math
+    #[cfg_attr(feature = "serialize", derive(Serialize, Deserialize))]
     #[derive(Debug, Clone, Hash, PartialEq, Eq)]
     pub struct In {
         start: usize,
@@ -223,6 +226,7 @@ mod inex {
 /// # }
 /// # fn main() { try_main().unwrap(); }
 /// ```
+#[cfg_attr(feature = "serialize", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub struct Spliced<R, S> {
     refid: R,
@@ -687,6 +691,7 @@ pub type SeqSplicedStranded = Spliced<String, ReqStrand>;
 pub type SeqSplicedUnstranded = Spliced<String, NoStrand>;
 
 quick_error! {
+    #[cfg_attr(feature = "serialize", derive(Serialize, Deserialize))]
     #[derive(Debug, Clone)]
     pub enum SplicingError {
         IntronLength {

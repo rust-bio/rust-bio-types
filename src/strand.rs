@@ -10,6 +10,7 @@ use std::ops::Neg;
 use std::str::FromStr;
 
 /// Strand information.
+#[cfg_attr(feature = "serialize", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Copy)]
 pub enum Strand {
     Forward,
@@ -134,6 +135,7 @@ impl From<NoStrand> for Strand {
 }
 
 /// Strand information for annotations that require a strand.
+#[cfg_attr(feature = "serialize", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Hash, PartialEq, Eq, Ord, PartialOrd, Copy)]
 pub enum ReqStrand {
     Forward,
@@ -243,6 +245,7 @@ impl Neg for ReqStrand {
 
 /// Strand information for annotations that definitively have no
 /// strand information.
+#[cfg_attr(feature = "serialize", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Hash, PartialEq, Eq, Ord, PartialOrd, Copy)]
 pub enum NoStrand {
     Unknown,
@@ -302,6 +305,7 @@ where
 }
 
 quick_error! {
+    #[cfg_attr(feature = "serialize", derive(Serialize, Deserialize))]
     #[derive(Debug, Clone)]
     pub enum StrandError {
         InvalidChar(invalid_char: char) {

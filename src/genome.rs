@@ -20,7 +20,8 @@ pub trait AbstractInterval {
     }
 }
 
-#[derive(new, Debug, PartialEq, Eq, Clone, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serialize", derive(Serialize, Deserialize))]
+#[derive(new, Debug, PartialEq, Eq, Clone, Hash)]
 pub struct Interval {
     contig: String,
     range: Range<Position>,
@@ -67,7 +68,8 @@ pub trait AbstractLocus {
     fn pos(&self) -> Position;
 }
 
-#[derive(new, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serialize", derive(Serialize, Deserialize))]
+#[derive(new, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Hash)]
 pub struct Locus {
     contig: String,
     pos: Position,
