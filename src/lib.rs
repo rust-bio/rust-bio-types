@@ -1,4 +1,5 @@
-#[macro_use]
+#[cfg_attr(feature = "serde_feature", macro_use)]
+#[cfg(feature = "serde_feature")]
 extern crate serde_derive;
 #[macro_use]
 extern crate quick_error;

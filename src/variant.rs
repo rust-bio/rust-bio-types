@@ -7,7 +7,8 @@ pub trait AbstractVariant: genome::AbstractLocus {
 }
 
 /// Possible genomic variants.
-#[derive(Debug, PartialEq, Eq, Clone, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serialize", derive(Serialize, Deserialize))]
+#[derive(Debug, PartialEq, Eq, Clone, Hash)]
 pub enum Kind {
     SNV(Base),
     MNV(Sequence),

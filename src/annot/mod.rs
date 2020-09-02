@@ -54,6 +54,7 @@ pub mod spliced;
 
 // Errors that arise in parsing annotations.
 quick_error! {
+    #[cfg_attr(feature = "serialize", derive(Serialize, Deserialize))]
     #[derive(Debug, Clone)]
     pub enum ParseAnnotError {
         BadAnnot {
@@ -76,6 +77,7 @@ quick_error! {
 
 // Errors that arise in maniuplating annotations
 quick_error! {
+    #[cfg_attr(feature = "serialize", derive(Serialize, Deserialize))]
     #[derive(Debug, Clone)]
     pub enum AnnotError {
         NoStrand {
