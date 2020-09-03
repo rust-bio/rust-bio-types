@@ -320,6 +320,33 @@ impl Alignment {
     }
 
     /// Returns the optimal path in the alignment matrix
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use bio_types::alignment::{Alignment,AlignmentMode};
+    /// use bio_types::alignment::AlignmentOperation::*;
+    /// let alignment = Alignment {
+    ///     score: 5,
+    ///     xstart: 3,
+    ///     ystart: 0,
+    ///     xend: 9,
+    ///     yend: 10,
+    ///     ylen: 10,
+    ///     xlen: 10,
+    ///     operations: vec![Match, Match, Match, Subst, Ins, Ins, Del, Del],
+    ///     mode: AlignmentMode::Semiglobal,
+    /// };
+    /// assert_eq!(alignment.path(),[
+    ///     (4, 5, Match),
+    ///     (5, 6, Match),
+    ///     (6, 7, Match),
+    ///     (7, 8, Subst),
+    ///     (8, 8, Ins),
+    ///     (9, 8, Ins),
+    ///     (9, 9, Del),
+    ///     (9, 10, Del)])
+    /// ```
     pub fn path(&self) -> Vec<(usize, usize, AlignmentOperation)> {
         let mut path = Vec::new();
 
@@ -473,5 +500,33 @@ mod tests {
         };
         let pretty = concat!("     AAAA--A\n     |\\\\+xx \nTTTTTTTT-TT \n\n\n");
         assert_eq!(alignment.pretty(b"AAAAA", b"TTTTTTTTTT"), pretty);
+    }
+
+    #[test]
+    fn test_path() {
+        let alignment = Alignment {
+            score: 5,
+            xstart: 3,
+            ystart: 0,
+            xend: 9,
+            yend: 10,
+            ylen: 10,
+            xlen: 10,
+            operations: vec![Match, Match, Match, Subst, Ins, Ins, Del, Del],
+            mode: AlignmentMode::Semiglobal,
+        };
+        assert_eq!(
+            alignment.path(),
+            [
+                (4, 5, Match),
+                (5, 6, Match),
+                (6, 7, Match),
+                (7, 8, Subst),
+                (8, 8, Ins),
+                (9, 8, Ins),
+                (9, 9, Del),
+                (9, 10, Del)
+            ]
+        )
     }
 }
