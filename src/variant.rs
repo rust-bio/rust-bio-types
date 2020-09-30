@@ -21,14 +21,18 @@ pub enum Kind {
 impl Kind {
     /// Return variant length.
     pub fn len(&self) -> genome::Length {
-        match self {
-            &Kind::SNV(_) => 1,
-            &Kind::MNV(ref s) => s.len() as u64,
-            &Kind::Insertion(ref s) => s.len() as u64,
-            &Kind::Deletion(l) => l,
-            &Kind::Duplication(l) => l,
-            &Kind::Inversion(l) => l,
-            &Kind::None => 1,
+        match *self {
+            Kind::SNV(_) => 1,
+            Kind::MNV(ref s) => s.len() as u64,
+            Kind::Insertion(ref s) => s.len() as u64,
+            Kind::Deletion(l) => l,
+            Kind::Duplication(l) => l,
+            Kind::Inversion(l) => l,
+            Kind::None => 1,
         }
+    }
+    /// Check if length is zero
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
     }
 }
