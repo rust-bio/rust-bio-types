@@ -199,16 +199,16 @@ impl Alignment {
                 _ => {
                     x_i = self.xstart;
                     y_i = self.ystart;
-                    for k in x.iter().take(self.xstart) {
-                        x_pretty.push(*k as char);
-                        inb_pretty.push(' ');
-                        y_pretty.push(' ')
+                    // SAFETY: validity checked before creating an Alignment
+                    unsafe {
+                        x_pretty.push_str(std::str::from_utf8_unchecked(&x[..self.xstart]));
                     }
-                    for k in y.iter().take(self.ystart) {
-                        y_pretty.push(*k as char);
-                        inb_pretty.push(' ');
-                        x_pretty.push(' ')
+                    y_pretty.push_str(&" ".repeat(self.xstart));
+                    unsafe {
+                        y_pretty.push_str(std::str::from_utf8_unchecked(&y[..self.ystart]));
                     }
+                    x_pretty.push_str(&" ".repeat(self.ystart));
+                    inb_pretty.push_str(&" ".repeat(self.xstart + self.ystart));
                 }
             }
 
