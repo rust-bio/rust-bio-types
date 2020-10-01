@@ -200,12 +200,12 @@ impl Alignment {
                     x_i = self.xstart;
                     y_i = self.ystart;
                     for k in x.iter().take(self.xstart) {
-                        x_pretty.push_str(&format!("{}", String::from_utf8_lossy(&[*k])));
+                        x_pretty.push(*k as char);
                         inb_pretty.push(' ');
                         y_pretty.push(' ')
                     }
                     for k in y.iter().take(self.ystart) {
-                        y_pretty.push_str(&format!("{}", String::from_utf8_lossy(&[*k])));
+                        y_pretty.push(*k as char);
                         inb_pretty.push(' ');
                         x_pretty.push(' ')
                     }
@@ -216,21 +216,21 @@ impl Alignment {
             for i in 0..self.operations.len() {
                 match self.operations[i] {
                     AlignmentOperation::Match => {
-                        x_pretty.push_str(&format!("{}", String::from_utf8_lossy(&[x[x_i]])));
+                        x_pretty.push(x[x_i] as char);
                         x_i += 1;
 
                         inb_pretty.push_str("|");
 
-                        y_pretty.push_str(&format!("{}", String::from_utf8_lossy(&[y[y_i]])));
+                        y_pretty.push(y[y_i] as char);
                         y_i += 1;
                     }
                     AlignmentOperation::Subst => {
-                        x_pretty.push_str(&format!("{}", String::from_utf8_lossy(&[x[x_i]])));
+                        x_pretty.push(x[x_i] as char);
                         x_i += 1;
 
                         inb_pretty.push('\\');
 
-                        y_pretty.push_str(&format!("{}", String::from_utf8_lossy(&[y[y_i]])));
+                        y_pretty.push(y[y_i] as char);
                         y_i += 1;
                     }
                     AlignmentOperation::Del => {
@@ -238,11 +238,11 @@ impl Alignment {
 
                         inb_pretty.push('x');
 
-                        y_pretty.push_str(&format!("{}", String::from_utf8_lossy(&[y[y_i]])));
+                        y_pretty.push(y[y_i] as char);
                         y_i += 1;
                     }
                     AlignmentOperation::Ins => {
-                        x_pretty.push_str(&format!("{}", String::from_utf8_lossy(&[x[x_i]])));
+                        x_pretty.push(x[x_i] as char);
                         x_i += 1;
 
                         inb_pretty.push('+');
@@ -251,7 +251,7 @@ impl Alignment {
                     }
                     AlignmentOperation::Xclip(len) => {
                         for k in x.iter().take(len) {
-                            x_pretty.push_str(&format!("{}", String::from_utf8_lossy(&[*k])));
+                            x_pretty.push(*k as char);
                             x_i += 1;
 
                             inb_pretty.push(' ');
@@ -261,7 +261,7 @@ impl Alignment {
                     }
                     AlignmentOperation::Yclip(len) => {
                         for k in y.iter().take(len) {
-                            y_pretty.push_str(&format!("{}", String::from_utf8_lossy(&[*k])));
+                            y_pretty.push(*k as char);
                             y_i += 1;
 
                             inb_pretty.push(' ');
@@ -278,12 +278,12 @@ impl Alignment {
                 AlignmentMode::Custom => {}
                 _ => {
                     for k in x.iter().take(self.xlen).skip(x_i) {
-                        x_pretty.push_str(&format!("{}", String::from_utf8_lossy(&[*k])));
+                        x_pretty.push(*k as char);
                         inb_pretty.push(' ');
                         y_pretty.push(' ')
                     }
                     for k in y.iter().take(self.ylen).skip(y_i) {
-                        y_pretty.push_str(&format!("{}", String::from_utf8_lossy(&[*k])));
+                        y_pretty.push(*k as char);
                         inb_pretty.push(' ');
                         x_pretty.push(' ')
                     }
