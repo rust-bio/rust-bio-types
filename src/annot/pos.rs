@@ -107,8 +107,8 @@ where
     /// ```
     fn add_assign(&mut self, dist: T) {
         match self.strand {
-            ReqStrand::Forward => self.pos += dist.into(),
-            ReqStrand::Reverse => self.pos -= dist.into(),
+            ReqStrand::Forward => self.pos += dist,
+            ReqStrand::Reverse => self.pos -= dist,
         }
     }
 }
@@ -138,8 +138,8 @@ where
     /// ```
     fn sub_assign(&mut self, dist: T) {
         match self.strand {
-            ReqStrand::Forward => self.pos -= dist.into(),
-            ReqStrand::Reverse => self.pos += dist.into(),
+            ReqStrand::Forward => self.pos -= dist,
+            ReqStrand::Reverse => self.pos += dist,
         }
     }
 }
@@ -169,9 +169,7 @@ impl<R, S> Loc for Pos<R, S> {
         Self::Strand: Into<ReqStrand> + Copy,
         T: Neg<Output = T> + Copy,
     {
-        if self.refid != pos.refid {
-            None
-        } else if self.pos != pos.pos {
+        if (self.refid != pos.refid) || (self.pos != pos.pos) {
             None
         } else {
             Some(Pos::new(
@@ -252,21 +250,17 @@ where
             static ref POS_RE: Regex = Regex::new(r"^(.*):(\d+)(\([+-]\))?$").unwrap();
         }
 
-        let cap = POS_RE
-            .captures(s)
-            .ok_or_else(|| ParseAnnotError::BadAnnot)?;
+        let cap = POS_RE.captures(s).ok_or(ParseAnnotError::BadAnnot)?;
 
         let strand = cap
             .get(3)
             .map_or("", |m| m.as_str())
             .parse::<S>()
-            .map_err(|e| ParseAnnotError::ParseStrand(e))?;
+            .map_err(ParseAnnotError::ParseStrand)?;
 
         Ok(Pos::new(
             R::from(cap[1].to_owned()),
-            cap[2]
-                .parse::<isize>()
-                .map_err(|e| ParseAnnotError::ParseInt(e))?,
+            cap[2].parse::<isize>().map_err(ParseAnnotError::ParseInt)?,
             strand,
         ))
     }
