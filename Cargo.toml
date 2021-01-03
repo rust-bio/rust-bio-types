@@ -1,6 +1,6 @@
 [package]
 name = "bio-types"
-version = "0.7.1-alpha.0"
+version = "0.8.0-alpha.0"
 authors = ["Johannes Köster <johannes.koester@tu-dortmund.de>"]
 description = "A collection of common biomedical types for use in rust-bio and rust-htslib."
 homepage = "https://rust-bio.github.io"
@@ -12,8 +12,7 @@ license-file = "LICENSE.md"
 
 
 [dependencies]
-serde = "1.0"
-serde_derive = "1.0"
+serde = { version = "^1", optional = true, features=["derive"] }
 quick-error = "1.2"
 regex = "1.0"
 lazy_static = "1.1"
