@@ -22,7 +22,8 @@ use strum_macros::{AsRefStr, Display};
 /// // obtain string via `AsRef<&'static str>`
 /// assert_eq!(ReadPairOrientation::R1F2.as_ref(), "R1F2");
 /// ```
-#[derive(Debug, Clone, Copy, PartialEq, Eq, AsRefStr, Display, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, AsRefStr, Display)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum ReadPairOrientation {
     F1R2,
     F2R1,

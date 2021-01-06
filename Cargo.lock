@@ -11,14 +11,13 @@ dependencies = [
 
 [[package]]
 name = "bio-types"
-version = "0.7.1-alpha.0"
+version = "0.8.0-alpha.0"
 dependencies = [
  "derive-new",
  "lazy_static",
  "quick-error",
  "regex",
  "serde",
- "serde_derive",
  "strum_macros",
 ]
 
@@ -101,6 +100,9 @@ name = "serde"
 version = "1.0.118"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "06c64263859d87aa2eb554587e2d23183398d617427327cf2b3d0ed8c69e4800"
+dependencies = [
+ "serde_derive",
+]
 
 [[package]]
 name = "serde_derive"
