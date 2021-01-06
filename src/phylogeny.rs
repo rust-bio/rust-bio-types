@@ -7,9 +7,12 @@
 //! Each node is a taxon, identified as a string.
 //! The edges are weighted by the phylogenetic distance if it was defined, or f32::NAN otherwise.
 
-use petgraph::graph::Graph;
+use petgraph::{graph::Graph, Directed};
 
 pub type Taxon = String;
 pub type Proximity = f32;
 
-pub type Tree = Graph<Taxon, Proximity, Directed>;
+pub type TreeGraph = Graph<Taxon, Proximity, Directed>;
+pub struct Tree {
+    pub g: TreeGraph,
+}
