@@ -225,7 +225,7 @@ impl Alignment {
                         x_pretty.push_str(&format!("{}", String::from_utf8_lossy(&[x[x_i]])));
                         x_i += 1;
 
-                        inb_pretty.push_str("|");
+                        inb_pretty.push('|');
 
                         y_pretty.push_str(&format!("{}", String::from_utf8_lossy(&[y[y_i]])));
                         y_i += 1;
@@ -310,13 +310,13 @@ impl Alignment {
         while idx < ml {
             let rng = idx..min(idx + step, ml);
             s.push_str(&x_pretty[rng.clone()]);
-            s.push_str("\n");
+            s.push('\n');
 
             s.push_str(&inb_pretty[rng.clone()]);
-            s.push_str("\n");
+            s.push('\n');
 
             s.push_str(&y_pretty[rng]);
-            s.push_str("\n");
+            s.push('\n');
 
             s.push_str("\n\n");
             idx += step;
