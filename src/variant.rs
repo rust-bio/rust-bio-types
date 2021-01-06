@@ -4,9 +4,6 @@ use crate::sequence::{Base, Sequence};
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
-#[cfg(feature = "serde")]
-use serde::{Deserialize, Serialize};
-
 /// A trait for providing variant information. This can e.g. be implemented by file readers.
 pub trait AbstractVariant: genome::AbstractLocus {
     fn kind(&self) -> &Kind;
