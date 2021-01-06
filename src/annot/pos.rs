@@ -14,10 +14,10 @@ use std::str::FromStr;
 
 use regex::Regex;
 
-use annot::contig::Contig;
-use annot::loc::Loc;
-use annot::*;
-use strand::*;
+use crate::annot::contig::Contig;
+use crate::annot::loc::Loc;
+use crate::annot::*;
+use crate::strand::*;
 
 /// Position on a particular, named sequence (e.g. a chromosome).
 ///

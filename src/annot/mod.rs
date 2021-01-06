@@ -44,7 +44,7 @@
 //! # fn main() { try_main().unwrap(); }
 //! ```
 
-use strand;
+use crate::strand;
 
 pub mod contig;
 pub mod loc;
