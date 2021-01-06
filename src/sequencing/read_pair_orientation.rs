@@ -8,8 +8,6 @@
 
 use strum_macros::{AsRefStr, Display};
 
-use crate::bam;
-
 /// Representation of read pair orientation
 /// (e.g. F1R2 means that the forward read comes first on the reference contig,
 /// followed by the reverse read, on the same contig).
