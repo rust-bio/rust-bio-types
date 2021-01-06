@@ -11,7 +11,7 @@ dependencies = [
 
 [[package]]
 name = "bio-types"
-version = "0.8.0"
+version = "0.8.1-alpha.0"
 dependencies = [
  "derive-new",
  "lazy_static",
