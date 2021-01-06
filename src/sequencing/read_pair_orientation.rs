@@ -6,9 +6,9 @@
 //! This module provides a representation for read pair orientation, which is
 //! a readout of read mapping.
 
-use strum_macros::{AsRefStr, Display};
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
+use strum_macros::{AsRefStr, Display};
 
 /// Representation of read pair orientation
 /// (e.g. F1R2 means that the forward read comes first on the reference contig,
