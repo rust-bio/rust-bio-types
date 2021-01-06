@@ -1,5 +1,5 @@
-use genome;
-use sequence::{Base, Sequence};
+use crate::genome;
+use crate::sequence::{Base, Sequence};
 
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};

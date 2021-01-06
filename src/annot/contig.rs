@@ -14,10 +14,10 @@ use std::str::FromStr;
 
 use regex::Regex;
 
-use annot::loc::Loc;
-use annot::pos::Pos;
-use annot::*;
-use strand::*;
+use crate::annot::loc::Loc;
+use crate::annot::pos::Pos;
+use crate::annot::*;
+use crate::strand::*;
 
 /// Contiguous sequence region on a particular, named sequence (e.g. a
 /// chromosome)
