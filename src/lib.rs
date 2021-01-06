@@ -9,15 +9,15 @@ extern crate derive_new;
 
 extern crate regex;
 
-#[cfg(feature="phylogeny")]
+#[cfg(feature = "phylogeny")]
 extern crate petgraph;
 
 pub mod alignment;
 pub mod annot;
 pub mod genome;
+#[cfg(feature = "phylogeny")]
+pub mod phylogeny;
 pub mod sequence;
 pub mod sequencing;
 pub mod strand;
 pub mod variant;
-#[cfg(feature="phylogeny")]
-pub mod phylogeny;
