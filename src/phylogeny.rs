@@ -12,4 +12,4 @@ use petgraph::graph::Graph;
 pub type Taxon = String;
 pub type Proximity = f32;
 
-pub type Tree = Graph<Taxon, Proximity>;
+pub type Tree = Graph<Taxon, Proximity, Directed>;
