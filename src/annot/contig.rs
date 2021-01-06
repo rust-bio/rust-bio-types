@@ -14,10 +14,10 @@ use std::str::FromStr;
 
 use regex::Regex;
 
-use annot::loc::Loc;
-use annot::pos::Pos;
-use annot::*;
-use strand::*;
+use crate::annot::loc::Loc;
+use crate::annot::pos::Pos;
+use crate::annot::*;
+use crate::strand::*;
 
 /// Contiguous sequence region on a particular, named sequence (e.g. a
 /// chromosome)
@@ -63,10 +63,10 @@ impl<R, S> Contig<R, S> {
     /// ```
     pub fn new(refid: R, start: isize, length: usize, strand: S) -> Self {
         Contig {
-            refid: refid,
-            start: start,
-            length: length,
-            strand: strand,
+            refid,
+            start,
+            length,
+            strand,
         }
     }
 
@@ -118,8 +118,8 @@ impl<R, S> Contig<R, S> {
 
             Ok(Contig {
                 refid: pos.refid().clone(),
-                start: start,
-                length: length,
+                start,
+                length,
                 strand: pos.strand(),
             })
         }
@@ -131,7 +131,7 @@ impl<R, S> Contig<R, S> {
             refid: self.refid,
             start: self.start,
             length: self.length,
-            strand: strand,
+            strand,
         }
     }
 }
@@ -313,21 +313,15 @@ where
             static ref CONTIG_RE: Regex = Regex::new(r"^(.*):(\d+)-(\d+)(\([+-]\))?$").unwrap();
         }
 
-        let cap = CONTIG_RE
-            .captures(s)
-            .ok_or_else(|| ParseAnnotError::BadAnnot)?;
+        let cap = CONTIG_RE.captures(s).ok_or(ParseAnnotError::BadAnnot)?;
 
-        let start = cap[2]
-            .parse::<isize>()
-            .map_err(|e| ParseAnnotError::ParseInt(e))?;
-        let end = cap[3]
-            .parse::<isize>()
-            .map_err(|e| ParseAnnotError::ParseInt(e))?;
+        let start = cap[2].parse::<isize>().map_err(ParseAnnotError::ParseInt)?;
+        let end = cap[3].parse::<isize>().map_err(ParseAnnotError::ParseInt)?;
         let strand = cap
             .get(4)
             .map_or("", |m| m.as_str())
             .parse::<S>()
-            .map_err(|e| ParseAnnotError::ParseStrand(e))?;
+            .map_err(ParseAnnotError::ParseStrand)?;
 
         if start <= end {
             Ok(Contig::new(

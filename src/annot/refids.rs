@@ -41,6 +41,12 @@ pub struct RefIDSet<R> {
     refids: HashMap<String, R>,
 }
 
+impl<R> Default for RefIDSet<R> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl<R> RefIDSet<R> {
     /// Create a new, empty table of interned reference names
     pub fn new() -> Self {

@@ -1,5 +1,5 @@
-#[macro_use]
-extern crate serde_derive;
+#[cfg(feature = "serde")]
+extern crate serde;
 #[macro_use]
 extern crate quick_error;
 #[macro_use]
@@ -16,6 +16,7 @@ pub mod alignment;
 pub mod annot;
 pub mod genome;
 pub mod sequence;
+pub mod sequencing;
 pub mod strand;
 pub mod variant;
 #[cfg(feature="phylogeny")]
