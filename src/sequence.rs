@@ -10,4 +10,5 @@ pub trait SequenceRead {
     fn base(&self, i: usize) -> u8;
     fn base_qual(&self, i: usize) -> u8;
     fn len(&self) -> usize;
+    fn is_empty() -> bool;
 }
