@@ -46,11 +46,7 @@ impl Strand {
     }
 
     pub fn is_unknown(&self) -> bool {
-        if let Strand::Unknown = *self {
-            true
-        } else {
-            false
-        }
+        matches!(*self, Strand::Unknown)
     }
 }
 
