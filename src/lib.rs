@@ -18,6 +18,5 @@ pub mod genome;
 #[cfg(feature = "phylogeny")]
 pub mod phylogeny;
 pub mod sequence;
-pub mod sequencing;
 pub mod strand;
 pub mod variant;
