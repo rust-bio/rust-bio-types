@@ -13,5 +13,6 @@ pub mod alignment;
 pub mod annot;
 pub mod genome;
 pub mod sequence;
+pub mod sequencing;
 pub mod strand;
 pub mod variant;
