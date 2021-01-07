@@ -15,11 +15,18 @@ pub type AminoAcid = u8;
 pub type Sequence = Vec<u8>;
 
 pub trait SequenceRead {
+    /// Read name.
     fn name(&self) -> &[u8];
+    /// Base at position `i` in the read.
     fn base(&self, i: usize) -> u8;
+    /// Base quality at position `i` in the read.
     fn base_qual(&self, i: usize) -> u8;
+    /// Read length.
     fn len(&self) -> usize;
-    fn is_empty(&self) -> bool;
+    /// Return `true` if read is empty.
+    fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
 }
 
 /// Representation of sequence read pair orientation
