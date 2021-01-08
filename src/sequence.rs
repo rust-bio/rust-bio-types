@@ -6,6 +6,7 @@
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 use strum_macros::{AsRefStr, Display};
+use SequenceReadPairOrientation::None;
 
 /// A DNA base
 pub type Base = u8;
@@ -55,4 +56,10 @@ pub enum SequenceReadPairOrientation {
     F2F1,
     R2R1,
     None,
+}
+
+impl Default for SequenceReadPairOrientation {
+    fn default() -> Self {
+        None
+    }
 }
