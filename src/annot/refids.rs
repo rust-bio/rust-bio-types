@@ -41,10 +41,18 @@ pub struct RefIDSet<R> {
     refids: HashMap<String, R>,
 }
 
+impl<R> Default for RefIDSet<R> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl<R> RefIDSet<R> {
     /// Create a new, empty table of interned reference names
     pub fn new() -> Self {
-        Self::default()
+        RefIDSet {
+            refids: HashMap::new(),
+        }
     }
 
     /// Intern a reference name.
@@ -68,14 +76,6 @@ impl<R> RefIDSet<R> {
             let r = R::from(id.to_owned());
             self.refids.insert(id.to_owned(), r.clone());
             r
-        }
-    }
-}
-
-impl<R> Default for RefIDSet<R> {
-    fn default() -> Self {
-        Self {
-            refids: HashMap::new(),
         }
     }
 }

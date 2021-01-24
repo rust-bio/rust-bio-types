@@ -8,10 +8,10 @@
 
 use std::ops::Neg;
 
-use annot::contig::Contig;
-use annot::pos::Pos;
+use crate::annot::contig::Contig;
+use crate::annot::pos::Pos;
 
-use strand::*;
+use crate::strand::*;
 
 /// A trait for a sequence location -- a defined region on a named
 /// chromosome (or other reference sequence), which may also have
@@ -80,7 +80,7 @@ pub trait Loc {
         Self::Strand: Into<ReqStrand> + Copy,
         T: Neg<Output = T> + Copy;
 
-    fn contig_intersection<T>(&self, &Contig<Self::RefID, T>) -> Option<Self>
+    fn contig_intersection<T>(&self, other: &Contig<Self::RefID, T>) -> Option<Self>
     where
         Self: ::std::marker::Sized,
         Self::RefID: PartialEq + Clone,

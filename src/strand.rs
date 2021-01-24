@@ -281,7 +281,7 @@ impl Display for NoStrand {
 pub trait Same {
     /// Indicate when two strands are the "same" -- two
     /// unknown/unspecified strands are the "same" but are not equal.
-    fn same(&self, &Self) -> bool;
+    fn same(&self, other: &Self) -> bool;
 }
 
 impl<T> Same for Option<T>

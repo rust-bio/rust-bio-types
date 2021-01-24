@@ -14,10 +14,10 @@ use std::str::FromStr;
 
 use regex::Regex;
 
-use annot::contig::Contig;
-use annot::loc::Loc;
-use annot::*;
-use strand::*;
+use crate::annot::contig::Contig;
+use crate::annot::loc::Loc;
+use crate::annot::*;
+use crate::strand::*;
 
 /// Position on a particular, named sequence (e.g. a chromosome).
 ///
@@ -165,7 +165,7 @@ impl<R, S> Loc for Pos<R, S> {
         Self::Strand: Into<ReqStrand> + Copy,
         T: Neg<Output = T> + Copy,
     {
-        if self.refid != pos.refid || self.pos != pos.pos {
+        if (self.refid != pos.refid) || (self.pos != pos.pos) {
             None
         } else {
             Some(Pos::new(

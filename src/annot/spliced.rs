@@ -15,11 +15,11 @@ use std::str::FromStr;
 
 use regex::Regex;
 
-use annot::contig::Contig;
-use annot::loc::Loc;
-use annot::pos::Pos;
-use annot::*;
-use strand::*;
+use crate::annot::contig::Contig;
+use crate::annot::loc::Loc;
+use crate::annot::pos::Pos;
+use crate::annot::*;
+use crate::strand::*;
 
 // The spliced location representation inherently cannot represent
 // "bad" splicing structures. Locations comprise a first exon length,
@@ -427,7 +427,7 @@ impl<R, S> Loc for Spliced<R, S> {
         Self::Strand: Into<ReqStrand> + Copy,
         T: Neg<Output = T> + Copy,
     {
-        if self.refid != *pos.refid() || pos.pos() < self.start {
+        if (self.refid != *pos.refid()) || pos.pos() < self.start {
             return None;
         }
 
