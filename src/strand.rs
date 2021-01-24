@@ -53,11 +53,10 @@ impl Strand {
 impl PartialEq for Strand {
     /// Returns true if both are `Forward` or both are `Reverse`, otherwise returns false.
     fn eq(&self, other: &Strand) -> bool {
-        match (self, other) {
-            (&Strand::Forward, &Strand::Forward) => true,
-            (&Strand::Reverse, &Strand::Reverse) => true,
-            _ => false,
-        }
+        matches!(
+            (self, other),
+            (&Strand::Forward, &Strand::Forward) | (&Strand::Reverse, &Strand::Reverse)
+        )
     }
 }
 
@@ -74,12 +73,12 @@ impl Neg for Strand {
 
 impl Same for Strand {
     fn same(&self, s1: &Self) -> bool {
-        match (*self, *s1) {
-            (Strand::Forward, Strand::Forward) => true,
-            (Strand::Reverse, Strand::Reverse) => true,
-            (Strand::Unknown, Strand::Unknown) => true,
-            _ => false,
-        }
+        matches!(
+            (*self, *s1),
+            (Strand::Forward, Strand::Forward)
+                | (Strand::Reverse, Strand::Reverse)
+                | (Strand::Unknown, Strand::Unknown)
+        )
     }
 }
 
