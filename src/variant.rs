@@ -35,4 +35,8 @@ impl Kind {
             Kind::None => 1,
         }
     }
+    /// Check if length is zero
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
 }

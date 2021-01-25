@@ -60,11 +60,7 @@ impl<R, S> Pos<R, S> {
     /// let start = Pos::new(chr, 683946, ReqStrand::Reverse);
     /// ```
     pub fn new(refid: R, pos: isize, strand: S) -> Self {
-        Pos {
-            refid: refid,
-            pos: pos,
-            strand: strand,
-        }
+        Pos { refid, pos, strand }
     }
 
     /// Position on the reference sequence (0-based).
@@ -77,7 +73,7 @@ impl<R, S> Pos<R, S> {
         Pos {
             refid: self.refid,
             pos: self.pos,
-            strand: strand,
+            strand,
         }
     }
 }

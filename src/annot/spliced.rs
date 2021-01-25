@@ -597,10 +597,10 @@ where
         for exon_cap in exon_caps {
             let next_start = exon_cap[1]
                 .parse::<isize>()
-                .map_err(|e| ParseAnnotError::ParseInt(e))?;
+                .map_err(ParseAnnotError::ParseInt)?;
             let next_end = exon_cap[2]
                 .parse::<isize>()
-                .map_err(|e| ParseAnnotError::ParseInt(e))?;
+                .map_err(ParseAnnotError::ParseInt)?;
             starts.push((next_start - first_start) as usize);
             lengths.push((next_end - next_start) as usize);
         }

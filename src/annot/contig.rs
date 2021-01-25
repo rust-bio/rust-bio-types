@@ -106,7 +106,7 @@ impl<R, S> Contig<R, S> {
             Ok(Contig {
                 refid: pos.refid().clone(),
                 start: pos.start(),
-                length: length,
+                length,
                 strand: pos.strand(),
             })
         } else {
