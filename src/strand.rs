@@ -50,6 +50,7 @@ impl Strand {
     }
 }
 
+#[allow(clippy::match_like_matches_macro)]
 impl PartialEq for Strand {
     /// Returns true if both are `Forward` or both are `Reverse`, otherwise returns false.
     fn eq(&self, other: &Strand) -> bool {
@@ -72,6 +73,7 @@ impl Neg for Strand {
     }
 }
 
+#[allow(clippy::match_like_matches_macro)]
 impl Same for Strand {
     fn same(&self, s1: &Self) -> bool {
         match (*self, *s1) {
