@@ -62,7 +62,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-<<<<<<< HEAD
       - uses: actions/cache@v2
         with:
           path: |
@@ -71,8 +70,6 @@ jobs:
             target
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
-=======
->>>>>>> 6321dfc (Switch from Travis to Github Actions)
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: ${{ matrix.rust }}
@@ -96,8 +93,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-<<<<<<< HEAD
-      
+
       - uses: actions/cache@v2
         with:
           path: |
@@ -105,17 +101,11 @@ jobs:
             ~/.cargo/git
             target
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-=======
->>>>>>> 6321dfc (Switch from Travis to Github Actions)
 
       - name: Install nightly toolchain
         uses: actions-rs/toolchain@v1
         with:
-<<<<<<< HEAD
           toolchain: stable
-=======
-          toolchain: nightly
->>>>>>> 6321dfc (Switch from Travis to Github Actions)
           override: true
 
       - name: Install cargo-tarpaulin
