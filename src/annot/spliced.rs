@@ -676,28 +676,20 @@ pub type SeqSplicedStranded = Spliced<String, ReqStrand>;
 /// by a `String`
 pub type SeqSplicedUnstranded = Spliced<String, NoStrand>;
 
-quick_error! {
-    #[derive(Debug, Clone)]
-    pub enum SplicingError {
-        IntronLength {
-            description("Invalid (non-positive) intron length")
-        }
-        ExonLength {
-            description("Invalid (non-positive) exon length")
-        }
-        NoExons {
-            description("No exons")
-        }
-        BlockStart {
-            description("Exons do not start at position 0")
-        }
-        BlockMismatch {
-            description("Number of exon starts != number of exon lengths")
-        }
-        BlockOverlap {
-            description("Exon blocks overlap")
-        }
-    }
+#[derive(Error, Debug)]
+pub enum SplicingError {
+    #[error("Invalid (non-positive) intron length")]
+    IntronLength,
+    #[error("Invalid (non-positive) exon length")]
+    ExonLength,
+    #[error("No exons")]
+    NoExons,
+    #[error("Exons do not start at position 0")]
+    BlockStart,
+    #[error("Number of exon starts != number of exon lengths")]
+    BlockMismatch,
+    #[error("Exon blocks overlap")]
+    BlockOverlap,
 }
 
 #[cfg(test)]

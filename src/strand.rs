@@ -8,6 +8,7 @@
 use std::fmt::{self, Display, Formatter};
 use std::ops::Neg;
 use std::str::FromStr;
+use thiserror::Error;
 
 /// Strand information.
 #[derive(Debug, Clone, Copy)]
@@ -299,17 +300,12 @@ where
     }
 }
 
-quick_error! {
-    #[derive(Debug, Clone)]
-    pub enum StrandError {
-        InvalidChar(invalid_char: char) {
-            description("invalid character for strand conversion")
-            display("character {:?} can not be converted to a Strand", invalid_char)
-        }
-        ParseError {
-            description("error parsing strand")
-        }
-    }
+#[derive(Error, Debug)]
+pub enum StrandError {
+    #[error("invalid character for strand conversion: {0:?}: can not be converted to a Strand")]
+    InvalidChar(char),
+    #[error("error parsing strand")]
+    ParseError,
 }
 
 #[cfg(test)]
