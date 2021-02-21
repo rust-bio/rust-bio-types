@@ -5,6 +5,9 @@
 
 //! Types for representing pairwise sequence alignments
 
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+
 pub type TextSlice<'a> = &'a [u8];
 
 /// Alignment operations supported are match, substitution, insertion, deletion
@@ -15,7 +18,8 @@ pub type TextSlice<'a> = &'a [u8];
 /// value associated with the clipping operations are the lengths clipped. In case
 /// of standard modes like Global, Semi-Global and Local alignment, the clip operations
 /// are filtered out
-#[derive(Eq, PartialEq, Debug, Copy, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[derive(Eq, PartialEq, Debug, Copy, Clone)]
 pub enum AlignmentOperation {
     Match,
     Subst,
@@ -33,7 +37,8 @@ pub enum AlignmentOperation {
 /// appropriately set.
 ///
 /// The default alignment mode is Global.
-#[derive(Debug, PartialEq, Eq, Copy, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[derive(Debug, PartialEq, Eq, Copy, Clone)]
 pub enum AlignmentMode {
     Local,
     Semiglobal,
@@ -53,7 +58,8 @@ impl Default for AlignmentMode {
 /// lengths of sequences x and y, and the alignment edit operations. The start position
 /// and end position of the alignment does not include the clipped regions. The length
 /// of clipped regions are already encapsulated in the Alignment Operation.
-#[derive(Debug, Eq, PartialEq, Clone, Serialize, Deserialize, Default)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[derive(Debug, Eq, PartialEq, Clone, Default)]
 pub struct Alignment {
     /// Smith-Waterman alignment score
     pub score: i32,
@@ -219,7 +225,7 @@ impl Alignment {
                         x_pretty.push_str(&format!("{}", String::from_utf8_lossy(&[x[x_i]])));
                         x_i += 1;
 
-                        inb_pretty.push_str("|");
+                        inb_pretty.push('|');
 
                         y_pretty.push_str(&format!("{}", String::from_utf8_lossy(&[y[y_i]])));
                         y_i += 1;
@@ -304,13 +310,13 @@ impl Alignment {
         while idx < ml {
             let rng = idx..min(idx + step, ml);
             s.push_str(&x_pretty[rng.clone()]);
-            s.push_str("\n");
+            s.push('\n');
 
             s.push_str(&inb_pretty[rng.clone()]);
-            s.push_str("\n");
+            s.push('\n');
 
             s.push_str(&y_pretty[rng]);
-            s.push_str("\n");
+            s.push('\n');
 
             s.push_str("\n\n");
             idx += step;

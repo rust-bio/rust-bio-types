@@ -8,6 +8,7 @@
 use std::fmt::{self, Display, Formatter};
 use std::ops::Neg;
 use std::str::FromStr;
+use thiserror::Error;
 
 /// Strand information.
 #[derive(Debug, Clone, Copy)]
@@ -46,14 +47,11 @@ impl Strand {
     }
 
     pub fn is_unknown(&self) -> bool {
-        if let Strand::Unknown = *self {
-            true
-        } else {
-            false
-        }
+        matches!(*self, Strand::Unknown)
     }
 }
 
+#[allow(clippy::match_like_matches_macro)]
 impl PartialEq for Strand {
     /// Returns true if both are `Forward` or both are `Reverse`, otherwise returns false.
     fn eq(&self, other: &Strand) -> bool {
@@ -76,6 +74,7 @@ impl Neg for Strand {
     }
 }
 
+#[allow(clippy::match_like_matches_macro)]
 impl Same for Strand {
     fn same(&self, s1: &Self) -> bool {
         match (*self, *s1) {
@@ -285,7 +284,7 @@ impl Display for NoStrand {
 pub trait Same {
     /// Indicate when two strands are the "same" -- two
     /// unknown/unspecified strands are the "same" but are not equal.
-    fn same(&self, &Self) -> bool;
+    fn same(&self, other: &Self) -> bool;
 }
 
 impl<T> Same for Option<T>
@@ -301,17 +300,12 @@ where
     }
 }
 
-quick_error! {
-    #[derive(Debug, Clone)]
-    pub enum StrandError {
-        InvalidChar(invalid_char: char) {
-            description("invalid character for strand conversion")
-            display("character {:?} can not be converted to a Strand", invalid_char)
-        }
-        ParseError {
-            description("error parsing strand")
-        }
-    }
+#[derive(Error, Debug)]
+pub enum StrandError {
+    #[error("invalid character for strand conversion: {0:?}: can not be converted to a Strand")]
+    InvalidChar(char),
+    #[error("error parsing strand")]
+    ParseError,
 }
 
 #[cfg(test)]

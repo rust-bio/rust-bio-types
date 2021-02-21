@@ -1,6 +1,9 @@
 use std::cmp;
 use std::ops::Range;
 
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+
 pub type Position = u64;
 pub type Length = u64;
 
@@ -19,8 +22,8 @@ pub trait AbstractInterval {
             && locus.pos() < self.range().end
     }
 }
-
-#[derive(new, Debug, PartialEq, Eq, Clone, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[derive(new, Debug, PartialEq, Eq, Clone, Hash)]
 pub struct Interval {
     contig: String,
     range: Range<Position>,
@@ -67,7 +70,8 @@ pub trait AbstractLocus {
     fn pos(&self) -> Position;
 }
 
-#[derive(new, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[derive(new, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Hash)]
 pub struct Locus {
     contig: String,
     pos: Position,
