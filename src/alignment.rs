@@ -19,7 +19,7 @@ pub type TextSlice<'a> = &'a [u8];
 /// of standard modes like Global, Semi-Global and Local alignment, the clip operations
 /// are filtered out
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[derive(Eq, PartialEq, Debug, Copy, Clone)]
+#[derive(Eq, PartialEq, Debug, Copy, Clone, Hash)]
 pub enum AlignmentOperation {
     Match,
     Subst,
