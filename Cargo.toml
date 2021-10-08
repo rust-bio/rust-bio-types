@@ -10,6 +10,7 @@ readme = "README.md"
 license = "MIT"
 license-file = "LICENSE.md"
 edition = "2018"
+exclude = [".gitignore", ".github"]
 
 [features]
 phylogeny = ["petgraph"]
