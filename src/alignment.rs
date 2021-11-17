@@ -157,7 +157,7 @@ impl Alignment {
     /// sequence x, second line is for the alignment operation and the
     /// the third line is for the sequence y. A '-' in the sequence
     /// indicates a blank (insertion/deletion). The operations follow
-    /// the following convention: '|' for a match, '\\' for a mismatch,
+    /// the following convention: '|' for a match, '\\' (a single backslash) for a mismatch,
     /// '+' for an insertion, 'x' for a deletion and ' ' for clipping
     ///
     /// # Example
