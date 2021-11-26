@@ -12,6 +12,7 @@ extern crate petgraph;
 
 pub mod alignment;
 pub mod annot;
+pub mod distancematrix;
 pub mod genome;
 #[cfg(feature = "phylogeny")]
 pub mod phylogeny;
