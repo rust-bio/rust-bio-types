@@ -13,7 +13,7 @@ edition = "2018"
 exclude = [".gitignore", ".github"]
 
 [features]
-phylogeny = ["petgraph"]
+phylogeny = ["petgraph", "nom"]
 
 
 [dependencies]
@@ -24,3 +24,4 @@ lazy_static = "1.1"
 derive-new = "0.5"
 petgraph = { version = ">=0.5,<0.7", optional = true }
 strum_macros = ">=0.20, <0.24"
+nom = { version = "7.1.0", features=["alloc"], optional = true }
