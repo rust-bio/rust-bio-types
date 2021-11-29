@@ -200,10 +200,7 @@ mod tests {
             vec!["a".to_string(), "b".to_string(), "c".to_string()],
             vec![vec![1., 2.], vec![3.]],
         );
-        match m {
-            Err(DistanceMatrixError::LengthError) => (),
-            _ => assert!(false),
-        };
+        assert!(matches!(m, Err(DistanceMatrixError::LengthError)));
     }
 
     #[test]
@@ -212,9 +209,6 @@ mod tests {
             vec!["a".to_string(), "b".to_string(), "c".to_string()],
             vec![vec![1., 2.], vec![3.], vec![4.]],
         );
-        match m {
-            Err(DistanceMatrixError::ShapeError) => (),
-            _ => assert!(false),
-        };
+        assert!(matches!(m, Err(DistanceMatrixError::ShapeError)));
     }
 }
