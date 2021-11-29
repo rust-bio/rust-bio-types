@@ -16,3 +16,11 @@ pub type TreeGraph = Graph<Taxon, Proximity, Directed>;
 pub struct Tree {
     pub g: TreeGraph,
 }
+
+impl Tree {
+    pub fn new() -> Self {
+        Tree {
+            g: TreeGraph::new(),
+        }
+    }
+}
