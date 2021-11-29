@@ -33,9 +33,9 @@ pub enum MatrixType {
 /// A distance matrix containing a list of taxon names and a matrix of pairwise distances.
 #[derive(Debug)]
 pub struct DistanceMatrix {
-    names: Vec<String>,
-    distances: Vec<Vec<f32>>,
-    matrix_type: MatrixType,
+    pub names: Vec<String>,
+    pub distances: Vec<Vec<f32>>,
+    pub matrix_type: MatrixType,
 }
 
 #[derive(Error, Debug)]
