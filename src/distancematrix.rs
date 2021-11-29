@@ -1,5 +1,17 @@
 //! A distance matrix is stored as a list of taxon names, together with a square
 //! or triangular matrix representing all pairwise distances.
+//!
+//! # Example
+//!
+//! ```rust
+//! use bio_types::distancematrix::DistanceMatrix;
+//!
+//! DistanceMatrix::new(vec!["a".to_string(), "b".to_string()],
+//! vec![
+//!  vec![0.0, 1.0],
+//!  vec![1.0, 0.0],
+//! ]);
+//! ```
 
 use std::{
     cmp::{max, min},
@@ -89,6 +101,21 @@ impl DistanceMatrix {
 /// Indices should be used as if the matrix was square. For triangular matrices,
 /// `i` and `j` must be distinct, and `(i,j)` and `(j,i)` represent the same
 /// element.
+///
+/// # Example
+///
+/// ```
+/// use bio_types::distancematrix::DistanceMatrix;
+///
+/// let mut t = DistanceMatrix::new(vec!["a".to_string(), "b".to_string()],
+/// vec![
+///  vec![],
+///  vec![1.0],
+/// ]).unwrap();
+/// assert_eq!(t[(1, 0)], 1.0);
+/// t[(0, 1)] = 2.0;
+/// assert_eq!(t[(1, 0)], 2.0);
+/// ```
 impl Index<(usize, usize)> for DistanceMatrix {
     type Output = f32;
     fn index(&self, t: (usize, usize)) -> &Self::Output {
