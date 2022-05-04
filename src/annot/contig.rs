@@ -468,6 +468,17 @@ mod tests {
     }
 
     #[test]
+    fn test_display_fmt() {
+        let tma19 = Contig::new(
+            "chrXI".to_owned(),
+            334412,
+            334916 - 334412,
+            ReqStrand::Reverse,
+        );
+        assert_eq!(format!("{}", tma19), "chrXI:334412-334916(-)");
+    }
+
+    #[test]
     fn intersection() {
         test_contig_ixn(
             "chrX:461829-462426(+)",
