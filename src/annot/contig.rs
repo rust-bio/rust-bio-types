@@ -287,17 +287,21 @@ impl<R, S> Loc for Contig<R, S> {
 impl<R, S> Display for Contig<R, S>
 where
     R: Display,
-    S: Display,
+    S: Display + Clone + Into<Strand>,
 {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         write!(
             f,
-            "{}:{}-{}{}",
+            "{}:{}-{}",
             self.refid,
             self.start,
-            self.start + self.length as isize,
-            self.strand
-        )
+            self.start + self.length as isize
+        )?;
+        let strand: Strand = self.strand.clone().into();
+        if !strand.is_unknown() {
+            write!(f, "({})", strand)?;
+        }
+        Ok(())
     }
 }
 
