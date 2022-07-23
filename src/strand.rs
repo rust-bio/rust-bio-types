@@ -5,6 +5,8 @@
 
 //! Data types for strand information on annotations.
 
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
 use std::fmt::{self, Display, Formatter};
 use std::ops::Neg;
 use std::str::FromStr;
@@ -12,6 +14,7 @@ use thiserror::Error;
 
 /// Strand information.
 #[derive(Debug, Clone, Copy)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum Strand {
     Forward,
     Reverse,
@@ -134,6 +137,7 @@ impl From<NoStrand> for Strand {
 
 /// Strand information for annotations that require a strand.
 #[derive(Debug, Clone, Hash, PartialEq, Eq, Ord, PartialOrd, Copy)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum ReqStrand {
     Forward,
     Reverse,
@@ -243,6 +247,7 @@ impl Neg for ReqStrand {
 /// Strand information for annotations that definitively have no
 /// strand information.
 #[derive(Debug, Clone, Hash, PartialEq, Eq, Ord, PartialOrd, Copy)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum NoStrand {
     Unknown,
 }
