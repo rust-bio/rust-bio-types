@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.0](https://www.github.com/rust-bio/rust-bio-types/compare/v0.12.1...v0.13.0) (2022-07-23)
+
+
+### Features
+
+* strand: Use serde ([#38](https://www.github.com/rust-bio/rust-bio-types/issues/38)) ([3fa1820](https://www.github.com/rust-bio/rust-bio-types/commit/3fa1820ec03165367b8c5025a6cf110fd968a81b))
+
 ### [0.12.1](https://www.github.com/rust-bio/rust-bio-types/compare/v0.12.0...v0.12.1) (2021-11-17)
 
 
