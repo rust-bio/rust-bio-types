@@ -1,6 +1,6 @@
 [package]
 name = "bio-types"
-version = "0.13.0"
+version = "0.13.1"
 authors = ["Johannes Köster <johannes.koester@tu-dortmund.de>"]
 description = "A collection of common biomedical types for use in rust-bio and rust-htslib."
 homepage = "https://rust-bio.github.io"

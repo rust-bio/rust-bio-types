@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.13.1](https://www.github.com/rust-bio/rust-bio-types/compare/v0.13.0...v0.13.1) (2022-12-09)
+
+
+### Bug Fixes
+
+* link to repository and docs ([#41](https://www.github.com/rust-bio/rust-bio-types/issues/41)) ([5e078d4](https://www.github.com/rust-bio/rust-bio-types/commit/5e078d4a097ad3daad82af60430e5d8e39e4850e))
+
 ## [0.13.0](https://www.github.com/rust-bio/rust-bio-types/compare/v0.12.1...v0.13.0) (2022-07-23)
 
 
