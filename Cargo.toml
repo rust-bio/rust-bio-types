@@ -15,9 +15,9 @@ exclude = [".gitignore", ".github"]
 [features]
 phylogeny = ["petgraph"]
 
-
 [dependencies]
 serde = { version = "^1", optional = true, features=["derive"] }
+clap = { version = "4.2.7", optional = true, features = ["derive"] }
 thiserror = "1"
 regex = "1.0"
 lazy_static = "1.1"

@@ -7,6 +7,8 @@
 
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
+#[cfg(feature = "clap")]
+use clap::ValueEnum;
 
 pub type TextSlice<'a> = &'a [u8];
 
@@ -38,18 +40,13 @@ pub enum AlignmentOperation {
 ///
 /// The default alignment mode is Global.
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[derive(Debug, PartialEq, Eq, Copy, Clone)]
+#[derive(Default, Debug, PartialEq, Eq, Copy, Clone, ValueEnum)]
 pub enum AlignmentMode {
     Local,
     Semiglobal,
+    [#default]
     Global,
     Custom,
-}
-
-impl Default for AlignmentMode {
-    fn default() -> Self {
-        AlignmentMode::Global
-    }
 }
 
 /// We consider alignment between two sequences x and  y. x is the query or read sequence
