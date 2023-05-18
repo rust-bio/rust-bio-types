@@ -40,7 +40,8 @@ pub enum AlignmentOperation {
 ///
 /// The default alignment mode is Global.
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[derive(Default, Debug, PartialEq, Eq, Copy, Clone, ValueEnum)]
+#[cfg_attr(feature = "clap", derive(ValueEnum))]
+#[derive(Default, Debug, PartialEq, Eq, Copy, Clone)]
 pub enum AlignmentMode {
     Local,
     Semiglobal,
