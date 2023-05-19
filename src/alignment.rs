@@ -5,10 +5,10 @@
 
 //! Types for representing pairwise sequence alignments
 
-#[cfg(feature = "serde")]
-use serde::{Deserialize, Serialize};
 #[cfg(feature = "clap")]
 use clap::ValueEnum;
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
 
 pub type TextSlice<'a> = &'a [u8];
 
@@ -41,13 +41,18 @@ pub enum AlignmentOperation {
 /// The default alignment mode is Global.
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[cfg_attr(feature = "clap", derive(ValueEnum))]
-#[derive(Default, Debug, PartialEq, Eq, Copy, Clone)]
+#[derive(Debug, PartialEq, Eq, Copy, Clone)]
 pub enum AlignmentMode {
     Local,
     Semiglobal,
-    [#default]
     Global,
     Custom,
+}
+
+impl Default for AlignmentMode {
+    fn default() -> Self {
+        AlignmentMode::Global
+    }
 }
 
 /// We consider alignment between two sequences x and  y. x is the query or read sequence
