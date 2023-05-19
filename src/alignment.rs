@@ -5,6 +5,8 @@
 
 //! Types for representing pairwise sequence alignments
 
+#[cfg(feature = "clap")]
+use clap::ValueEnum;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
@@ -38,6 +40,7 @@ pub enum AlignmentOperation {
 ///
 /// The default alignment mode is Global.
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "clap", derive(ValueEnum))]
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
 pub enum AlignmentMode {
     Local,
