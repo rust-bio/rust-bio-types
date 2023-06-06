@@ -44,7 +44,8 @@
 //! # fn main() { try_main().unwrap(); }
 //! ```
 
-use strand;
+use crate::strand;
+use thiserror::Error;
 
 pub mod contig;
 pub mod loc;
@@ -53,36 +54,25 @@ pub mod refids;
 pub mod spliced;
 
 // Errors that arise in parsing annotations.
-quick_error! {
-    #[derive(Debug, Clone)]
-    pub enum ParseAnnotError {
-        BadAnnot {
-            description("Annotation string does not match regex")
-        }
-        ParseInt(err: ::std::num::ParseIntError) {
-            description("Integer parsing error")
-        }
-        ParseStrand(err: strand::StrandError) {
-            description("Strand parsing error")
-        }
-        Splicing(err: spliced::SplicingError) {
-            description("Bad splicing structure")
-        }
-        EndBeforeStart {
-            description("Ending position < starting position")
-        }
-    }
+#[derive(Error, Debug)]
+pub enum ParseAnnotError {
+    #[error("Annotation string does not match regex")]
+    BadAnnot,
+    #[error("Integer parsing error")]
+    ParseInt(#[from] ::std::num::ParseIntError),
+    #[error("Strand parsing error")]
+    ParseStrand(#[from] strand::StrandError),
+    #[error("Bad splicing structure")]
+    Splicing(#[from] spliced::SplicingError),
+    #[error("Ending position < starting position")]
+    EndBeforeStart,
 }
 
 // Errors that arise in maniuplating annotations
-quick_error! {
-    #[derive(Debug, Clone)]
-    pub enum AnnotError {
-        NoStrand {
-            description("No strand information")
-        }
-        BadSplicing {
-            description("Invalid splicing structure")
-        }
-    }
+#[derive(Error, Debug)]
+pub enum AnnotError {
+    #[error("No strand information")]
+    NoStrand,
+    #[error("Invalid splicing structure")]
+    BadSplicing,
 }

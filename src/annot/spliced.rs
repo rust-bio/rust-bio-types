@@ -15,11 +15,11 @@ use std::str::FromStr;
 
 use regex::Regex;
 
-use annot::contig::Contig;
-use annot::loc::Loc;
-use annot::pos::Pos;
-use annot::*;
-use strand::*;
+use crate::annot::contig::Contig;
+use crate::annot::loc::Loc;
+use crate::annot::pos::Pos;
+use crate::annot::*;
+use crate::strand::*;
 
 // The spliced location representation inherently cannot represent
 // "bad" splicing structures. Locations comprise a first exon length,
@@ -51,8 +51,8 @@ mod inex {
                 Err(SplicingError::ExonLength)
             } else {
                 Ok(InEx {
-                    intron_length: intron_length,
-                    exon_length: exon_length,
+                    intron_length,
+                    exon_length,
                 })
             }
         }
@@ -100,7 +100,7 @@ mod inex {
     }
 
     impl<'a> Exes<'a> {
-        pub fn new(exon_0_length: usize, inexes: &'a Vec<InEx>) -> Self {
+        pub fn new(exon_0_length: usize, inexes: &'a [InEx]) -> Self {
             Exes {
                 state: ExesState::FirstExon(exon_0_length),
                 curr_start: 0,
@@ -167,7 +167,7 @@ mod inex {
 
     impl<'a> Ins<'a> {
         #[allow(dead_code)]
-        pub fn new(exon_0_length: usize, inexes: &'a Vec<InEx>) -> Self {
+        pub fn new(exon_0_length: usize, inexes: &'a [InEx]) -> Self {
             Ins {
                 curr_start: exon_0_length,
                 rest: inexes.iter(),
@@ -244,11 +244,11 @@ impl<R, S> Spliced<R, S> {
     /// ```
     pub fn new(refid: R, start: isize, exon_0_length: usize, strand: S) -> Self {
         Spliced {
-            refid: refid,
-            start: start,
-            exon_0_length: exon_0_length,
+            refid,
+            start,
+            exon_0_length,
             inexes: Vec::new(),
-            strand: strand,
+            strand,
         }
     }
 
@@ -261,7 +261,7 @@ impl<R, S> Spliced<R, S> {
         exon_starts: &[usize],
         strand: S,
     ) -> Result<Self, SplicingError> {
-        if exon_starts.len() < 1 {
+        if exon_starts.is_empty() {
             return Err(SplicingError::NoExons);
         } else if exon_starts[0] != 0 {
             return Err(SplicingError::BlockStart);
@@ -287,11 +287,11 @@ impl<R, S> Spliced<R, S> {
         }
 
         Ok(Spliced {
-            refid: refid,
-            start: start,
-            exon_0_length: exon_0_length,
-            inexes: inexes,
-            strand: strand,
+            refid,
+            start,
+            exon_0_length,
+            inexes,
+            strand,
         })
     }
 
@@ -308,7 +308,7 @@ impl<R, S> Spliced<R, S> {
         self.exon_0_length == 0 && self.inexes.is_empty()
     }
 
-    fn exes<'a>(&'a self) -> inex::Exes<'a> {
+    fn exes(&self) -> inex::Exes {
         inex::Exes::new(self.exon_0_length, &self.inexes)
     }
 
@@ -355,7 +355,7 @@ impl<R, S> Spliced<R, S> {
             start: self.start,
             exon_0_length: self.exon_0_length,
             inexes: self.inexes,
-            strand: strand,
+            strand,
         }
     }
 
@@ -427,9 +427,7 @@ impl<R, S> Loc for Spliced<R, S> {
         Self::Strand: Into<ReqStrand> + Copy,
         T: Neg<Output = T> + Copy,
     {
-        if self.refid != *pos.refid() {
-            return None;
-        } else if pos.pos() < self.start {
+        if (self.refid != *pos.refid()) || pos.pos() < self.start {
             return None;
         }
 
@@ -518,7 +516,7 @@ impl<R, S> Loc for Spliced<R, S> {
             }
         }
 
-        if exon_starts.len() > 0 {
+        if !exon_starts.is_empty() {
             let first_start = exon_starts[0];
             for start in exon_starts.iter_mut() {
                 *start -= first_start;
@@ -547,7 +545,7 @@ impl<R, S> Loc for Spliced<R, S> {
 impl<R, S> Display for Spliced<R, S>
 where
     R: Display,
-    S: Display,
+    S: Display + Clone + Into<Strand>,
 {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         write!(f, "{}:", self.refid)?;
@@ -564,7 +562,11 @@ where
             )?;
             sep = true;
         }
-        write!(f, "{}", self.strand)
+        let strand: Strand = self.strand.clone().into();
+        if !strand.is_unknown() {
+            write!(f, "({})", self.strand)?;
+        }
+        Ok(())
     }
 }
 
@@ -582,22 +584,14 @@ where
             static ref EXON_RE: Regex = Regex::new(r";(\d+)-(\d+)").unwrap();
         }
 
-        let cap = SPLICED_RE
-            .captures(s)
-            .ok_or_else(|| ParseAnnotError::BadAnnot)?;
+        let cap = SPLICED_RE.captures(s).ok_or(ParseAnnotError::BadAnnot)?;
 
         let mut starts = Vec::new();
         let mut lengths = Vec::new();
 
-        let first_start = cap[2]
-            .parse::<isize>()
-            .map_err(|e| ParseAnnotError::ParseInt(e))?;
-        let first_end = cap[3]
-            .parse::<isize>()
-            .map_err(|e| ParseAnnotError::ParseInt(e))?;
-        let strand = cap[5]
-            .parse::<S>()
-            .map_err(|e| ParseAnnotError::ParseStrand(e))?;
+        let first_start = cap[2].parse::<isize>().map_err(ParseAnnotError::ParseInt)?;
+        let first_end = cap[3].parse::<isize>().map_err(ParseAnnotError::ParseInt)?;
+        let strand = cap[5].parse::<S>().map_err(ParseAnnotError::ParseStrand)?;
 
         starts.push(0);
         lengths.push((first_end - first_start) as usize);
@@ -607,10 +601,10 @@ where
         for exon_cap in exon_caps {
             let next_start = exon_cap[1]
                 .parse::<isize>()
-                .map_err(|e| ParseAnnotError::ParseInt(e))?;
+                .map_err(ParseAnnotError::ParseInt)?;
             let next_end = exon_cap[2]
                 .parse::<isize>()
-                .map_err(|e| ParseAnnotError::ParseInt(e))?;
+                .map_err(ParseAnnotError::ParseInt)?;
             starts.push((next_start - first_start) as usize);
             lengths.push((next_end - next_start) as usize);
         }
@@ -622,7 +616,7 @@ where
             starts.as_slice(),
             strand,
         )
-        .map_err(|e| ParseAnnotError::Splicing(e))?;
+        .map_err(ParseAnnotError::Splicing)?;
         Ok(spliced)
     }
 }
@@ -686,28 +680,20 @@ pub type SeqSplicedStranded = Spliced<String, ReqStrand>;
 /// by a `String`
 pub type SeqSplicedUnstranded = Spliced<String, NoStrand>;
 
-quick_error! {
-    #[derive(Debug, Clone)]
-    pub enum SplicingError {
-        IntronLength {
-            description("Invalid (non-positive) intron length")
-        }
-        ExonLength {
-            description("Invalid (non-positive) exon length")
-        }
-        NoExons {
-            description("No exons")
-        }
-        BlockStart {
-            description("Exons do not start at position 0")
-        }
-        BlockMismatch {
-            description("Number of exon starts != number of exon lengths")
-        }
-        BlockOverlap {
-            description("Exon blocks overlap")
-        }
-    }
+#[derive(Error, Debug)]
+pub enum SplicingError {
+    #[error("Invalid (non-positive) intron length")]
+    IntronLength,
+    #[error("Invalid (non-positive) exon length")]
+    ExonLength,
+    #[error("No exons")]
+    NoExons,
+    #[error("Exons do not start at position 0")]
+    BlockStart,
+    #[error("Number of exon starts != number of exon lengths")]
+    BlockMismatch,
+    #[error("Exon blocks overlap")]
+    BlockOverlap,
 }
 
 #[cfg(test)]
@@ -802,8 +788,8 @@ mod tests {
         let p0_into_expected = Pos::new((), in_offset, in_strand);
         let p0_into_actual = loc.pos_into(&p0);
         let p0_back_out_actual = loc.pos_outof(&p0_into_expected);
-        print!(
-            "{}\t{}\t{:?}\t{:?}\t{:?}\n",
+        println!(
+            "{}\t{}\t{:?}\t{:?}\t{:?}",
             outstr, p0, p0_into_expected, p0_into_actual, p0_back_out_actual
         );
         assert!(Some(p0_into_expected).same(&p0_into_actual));

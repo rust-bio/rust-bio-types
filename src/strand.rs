@@ -5,12 +5,16 @@
 
 //! Data types for strand information on annotations.
 
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
 use std::fmt::{self, Display, Formatter};
 use std::ops::Neg;
 use std::str::FromStr;
+use thiserror::Error;
 
 /// Strand information.
 #[derive(Debug, Clone, Copy)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum Strand {
     Forward,
     Reverse,
@@ -46,14 +50,11 @@ impl Strand {
     }
 
     pub fn is_unknown(&self) -> bool {
-        if let Strand::Unknown = *self {
-            true
-        } else {
-            false
-        }
+        matches!(*self, Strand::Unknown)
     }
 }
 
+#[allow(clippy::match_like_matches_macro)]
 impl PartialEq for Strand {
     /// Returns true if both are `Forward` or both are `Reverse`, otherwise returns false.
     fn eq(&self, other: &Strand) -> bool {
@@ -76,6 +77,7 @@ impl Neg for Strand {
     }
 }
 
+#[allow(clippy::match_like_matches_macro)]
 impl Same for Strand {
     fn same(&self, s1: &Self) -> bool {
         match (*self, *s1) {
@@ -89,10 +91,7 @@ impl Same for Strand {
 
 impl Display for Strand {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        match *self {
-            Strand::Unknown => Ok(()),
-            _ => write!(f, "({})", self.strand_symbol()),
-        }
+        f.write_str(self.strand_symbol())
     }
 }
 
@@ -100,9 +99,9 @@ impl FromStr for Strand {
     type Err = StrandError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "" => Ok(Strand::Unknown),
-            "(+)" => Ok(Strand::Forward),
-            "(-)" => Ok(Strand::Reverse),
+            "+" | "(+)" => Ok(Strand::Forward),
+            "-" | "(-)" => Ok(Strand::Reverse),
+            "." | "" => Ok(Strand::Unknown),
             _ => Err(StrandError::ParseError),
         }
     }
@@ -135,6 +134,7 @@ impl From<NoStrand> for Strand {
 
 /// Strand information for annotations that require a strand.
 #[derive(Debug, Clone, Hash, PartialEq, Eq, Ord, PartialOrd, Copy)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum ReqStrand {
     Forward,
     Reverse,
@@ -197,10 +197,7 @@ impl Same for ReqStrand {
 
 impl Display for ReqStrand {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        match self {
-            ReqStrand::Forward => write!(f, "(+)"),
-            ReqStrand::Reverse => write!(f, "(-)"),
-        }
+        f.write_str(self.strand_symbol())
     }
 }
 
@@ -208,8 +205,8 @@ impl FromStr for ReqStrand {
     type Err = StrandError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "(+)" => Ok(ReqStrand::Forward),
-            "(-)" => Ok(ReqStrand::Reverse),
+            "+" | "(+)" => Ok(ReqStrand::Forward),
+            "-" | "(-)" => Ok(ReqStrand::Reverse),
             _ => Err(StrandError::ParseError),
         }
     }
@@ -244,6 +241,7 @@ impl Neg for ReqStrand {
 /// Strand information for annotations that definitively have no
 /// strand information.
 #[derive(Debug, Clone, Hash, PartialEq, Eq, Ord, PartialOrd, Copy)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum NoStrand {
     Unknown,
 }
@@ -285,7 +283,7 @@ impl Display for NoStrand {
 pub trait Same {
     /// Indicate when two strands are the "same" -- two
     /// unknown/unspecified strands are the "same" but are not equal.
-    fn same(&self, &Self) -> bool;
+    fn same(&self, other: &Self) -> bool;
 }
 
 impl<T> Same for Option<T>
@@ -301,17 +299,12 @@ where
     }
 }
 
-quick_error! {
-    #[derive(Debug, Clone)]
-    pub enum StrandError {
-        InvalidChar(invalid_char: char) {
-            description("invalid character for strand conversion")
-            display("character {:?} can not be converted to a Strand", invalid_char)
-        }
-        ParseError {
-            description("error parsing strand")
-        }
-    }
+#[derive(Error, Debug)]
+pub enum StrandError {
+    #[error("invalid character for strand conversion: {0:?}: can not be converted to a Strand")]
+    InvalidChar(char),
+    #[error("error parsing strand")]
+    ParseError,
 }
 
 #[cfg(test)]
