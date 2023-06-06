@@ -545,7 +545,7 @@ impl<R, S> Loc for Spliced<R, S> {
 impl<R, S> Display for Spliced<R, S>
 where
     R: Display,
-    S: Display,
+    S: Display + Clone + Into<Strand>,
 {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         write!(f, "{}:", self.refid)?;
@@ -562,7 +562,11 @@ where
             )?;
             sep = true;
         }
-        write!(f, "{}", self.strand)
+        let strand: Strand = self.strand.clone().into();
+        if !strand.is_unknown() {
+            write!(f, "({})", self.strand)?;
+        }
+        Ok(())
     }
 }
 

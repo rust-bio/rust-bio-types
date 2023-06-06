@@ -227,10 +227,15 @@ where
 impl<R, S> Display for Pos<R, S>
 where
     R: Display,
-    S: Display,
+    S: Display + Clone + Into<Strand>,
 {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        write!(f, "{}:{}{}", self.refid, self.pos, self.strand)
+        let strand: Strand = self.strand.clone().into();
+        if strand.is_unknown() {
+            write!(f, "{}:{}", self.refid, self.pos)
+        } else {
+            write!(f, "{}:{}({})", self.refid, self.pos, strand)
+        }
     }
 }
 

@@ -91,10 +91,7 @@ impl Same for Strand {
 
 impl Display for Strand {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        match *self {
-            Strand::Unknown => Ok(()),
-            _ => write!(f, "({})", self.strand_symbol()),
-        }
+        f.write_str(self.strand_symbol())
     }
 }
 
@@ -102,9 +99,9 @@ impl FromStr for Strand {
     type Err = StrandError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "" => Ok(Strand::Unknown),
-            "(+)" => Ok(Strand::Forward),
-            "(-)" => Ok(Strand::Reverse),
+            "+" | "(+)" => Ok(Strand::Forward),
+            "-" | "(-)" => Ok(Strand::Reverse),
+            "." | "" => Ok(Strand::Unknown),
             _ => Err(StrandError::ParseError),
         }
     }
@@ -200,10 +197,7 @@ impl Same for ReqStrand {
 
 impl Display for ReqStrand {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        match self {
-            ReqStrand::Forward => write!(f, "(+)"),
-            ReqStrand::Reverse => write!(f, "(-)"),
-        }
+        f.write_str(self.strand_symbol())
     }
 }
 
@@ -211,8 +205,8 @@ impl FromStr for ReqStrand {
     type Err = StrandError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "(+)" => Ok(ReqStrand::Forward),
-            "(-)" => Ok(ReqStrand::Reverse),
+            "+" | "(+)" => Ok(ReqStrand::Forward),
+            "-" | "(-)" => Ok(ReqStrand::Reverse),
             _ => Err(StrandError::ParseError),
         }
     }
