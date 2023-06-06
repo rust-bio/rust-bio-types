@@ -189,7 +189,7 @@ impl Alignment {
     ///    AAAAACCGTTGACGGCCA--A
     /// ```
     ///
-    pub fn pretty(&self, x: TextSlice, y: TextSlice) -> String {
+    pub fn pretty(&self, x: TextSlice, y: TextSlice, ncol: usize) -> String {
         let mut x_pretty = String::new();
         let mut y_pretty = String::new();
         let mut inb_pretty = String::new();
@@ -302,7 +302,6 @@ impl Alignment {
 
         let mut s = String::new();
         let mut idx = 0;
-        let step = 100; // Number of characters per line
         use std::cmp::min;
 
         assert_eq!(x_pretty.len(), inb_pretty.len());
@@ -311,7 +310,7 @@ impl Alignment {
         let ml = x_pretty.len();
 
         while idx < ml {
-            let rng = idx..min(idx + step, ml);
+            let rng = idx..min(idx + ncol, ml);
             s.push_str(&x_pretty[rng.clone()]);
             s.push('\n');
 
@@ -322,7 +321,7 @@ impl Alignment {
             s.push('\n');
 
             s.push_str("\n\n");
-            idx += step;
+            idx += ncol;
         }
 
         s
@@ -495,7 +494,7 @@ mod tests {
             mode: AlignmentMode::Semiglobal,
         };
         let pretty = concat!("  GAT  \n", "  \\||  \n", "CTAATCC\n", "\n\n");
-        assert_eq!(alignment.pretty(b"GAT", b"CTAATCC"), pretty);
+        assert_eq!(alignment.pretty(b"GAT", b"CTAATCC", 100), pretty);
         let alignment = Alignment {
             score: 5,
             xstart: 0,
@@ -508,7 +507,7 @@ mod tests {
             mode: AlignmentMode::Custom,
         };
         let pretty = concat!("     AAAA--A\n     |\\\\+xx \nTTTTTTTT-TT \n\n\n");
-        assert_eq!(alignment.pretty(b"AAAAA", b"TTTTTTTTTT"), pretty);
+        assert_eq!(alignment.pretty(b"AAAAA", b"TTTTTTTTTT", 100), pretty);
     }
 
     #[test]
