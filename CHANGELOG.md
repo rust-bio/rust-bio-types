@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.0.0](https://www.github.com/rust-bio/rust-bio-types/compare/v0.13.0...v1.0.0) (2023-06-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* custom number of columns in Alignment::pretty() (#19)
+
+### Features
+
+* allow AlignmentMode to be used on the command line ([#44](https://www.github.com/rust-bio/rust-bio-types/issues/44)) ([40846fb](https://www.github.com/rust-bio/rust-bio-types/commit/40846fb38f5abe471bdebdd40193ed2b5e545826))
+* custom number of columns in Alignment::pretty() ([#19](https://www.github.com/rust-bio/rust-bio-types/issues/19)) ([2528736](https://www.github.com/rust-bio/rust-bio-types/commit/252873617a6366520ee37dbd1f126f433e50c32e))
+* strand: Use +/- rather than (+)/(-) for str ([#39](https://www.github.com/rust-bio/rust-bio-types/issues/39)) ([45f518e](https://www.github.com/rust-bio/rust-bio-types/commit/45f518e97148f3cac27b53f4a6272267236c2912))
+
+
+### Bug Fixes
+
+* link to repository and docs ([#41](https://www.github.com/rust-bio/rust-bio-types/issues/41)) ([5e078d4](https://www.github.com/rust-bio/rust-bio-types/commit/5e078d4a097ad3daad82af60430e5d8e39e4850e))
+
 ## [0.13.0](https://www.github.com/rust-bio/rust-bio-types/compare/v0.12.1...v0.13.0) (2022-07-23)
 
 
