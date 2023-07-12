@@ -23,4 +23,4 @@ regex = "1.9"
 lazy_static = "1.1"
 derive-new = "0.5"
 petgraph = { version = ">=0.5, <0.7", optional = true }
-strum_macros = ">=0.20, <0.25"
+strum_macros = ">=0.20, <0.26"
