@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.0.1](https://www.github.com/rust-bio/rust-bio-types/compare/v1.0.0...v1.0.1) (2023-07-12)
+
+
+### Bug Fixes
+
+* make dependabot commit message follow conventional commits ([#55](https://www.github.com/rust-bio/rust-bio-types/issues/55)) ([f727826](https://www.github.com/rust-bio/rust-bio-types/commit/f72782674f28d152d0775605ee9c50bd45355b79))
+
 ## [1.0.0](https://www.github.com/rust-bio/rust-bio-types/compare/v0.13.0...v1.0.0) (2023-06-06)
 
 
