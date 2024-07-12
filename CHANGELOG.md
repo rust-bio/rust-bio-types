@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.0.2](https://github.com/rust-bio/rust-bio-types/compare/v1.0.1...v1.0.2) (2024-07-12)
+
+
+### Dependencies
+
+* bump clap from 4.4.0 to 4.4.18 ([ba733ba](https://github.com/rust-bio/rust-bio-types/commit/ba733bae293292c42e6ec651ca98a53c5152623b))
+* bump petgraph from 0.6.3 to 0.6.5 ([231cd4f](https://github.com/rust-bio/rust-bio-types/commit/231cd4f30d97e42dae1029b9d57f762ea229b695))
+* bump regex from 1.9.4 to 1.10.5 ([6307a18](https://github.com/rust-bio/rust-bio-types/commit/6307a1800c496e6294f35b808a9fd43fc15ceda8))
+* bump strum_macros from 0.25.2 to 0.26.4 ([c9de708](https://github.com/rust-bio/rust-bio-types/commit/c9de708e3b9c9f831f2c43458251843359f419d0))
+* bump thiserror from 1.0.47 to 1.0.62 ([4702ad2](https://github.com/rust-bio/rust-bio-types/commit/4702ad227671aa951e796b2820cf574629c92888))
+
 ## [1.0.1](https://github.com/rust-bio/rust-bio-types/compare/v1.0.0...v1.0.1) (2023-08-29)
 
 
