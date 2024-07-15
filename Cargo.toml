@@ -21,6 +21,6 @@ clap = { version = ">=3.2.0", optional = true, features = ["derive"] }
 thiserror = "1"
 regex = "1.10"
 lazy_static = "1.5"
-derive-new = "0.5"
+derive-new = "0.6"
 petgraph = { version = ">=0.5, <0.7", optional = true }
 strum_macros = ">=0.20, <0.27"
