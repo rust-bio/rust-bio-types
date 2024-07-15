@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.0.3](https://github.com/rust-bio/rust-bio-types/compare/v1.0.2...v1.0.3) (2024-07-15)
+
+
+### Dependencies
+
+* bump clap from 4.4.18 to 4.5.9 ([c2380d9](https://github.com/rust-bio/rust-bio-types/commit/c2380d966faeb63127ff08b319afa4359db2a8ff))
+* bump derive-new from 0.5.9 to 0.6.0 ([174b264](https://github.com/rust-bio/rust-bio-types/commit/174b2645649d4b69a2e66da0ff2da1547cd8a0a3))
+* bump lazy_static from 1.4.0 to 1.5.0 ([b84ef21](https://github.com/rust-bio/rust-bio-types/commit/b84ef21ed2f36189c0dc3bb5a958fa726515a96b))
+* bump serde from 1.0.188 to 1.0.204 ([0dfda26](https://github.com/rust-bio/rust-bio-types/commit/0dfda265893062fd41344b308df7f7ce83e4bd64))
+
 ## [1.0.2](https://github.com/rust-bio/rust-bio-types/compare/v1.0.1...v1.0.2) (2024-07-12)
 
 
