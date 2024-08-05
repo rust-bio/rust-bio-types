@@ -7,6 +7,13 @@
 
 * update release-please.yml to use v4 ([22dc35c](https://github.com/rust-bio/rust-bio-types/commit/22dc35c78a936ece182836c70cc13b45fff55d95))
 
+### Dependencies
+
+* deps: bump regex from 1.10.5 to 1.10.6 ([#108](https://github.com/rust-bio/rust-bio-types/commit/3c625c5cfdf67ee04143d426d64490dd0f989202))
+* deps: bump clap from 4.5.9 to 4.5.13 ([#107](https://github.com/rust-bio/rust-bio-types/commit/1182b3379cce87e47f06bc67d3c9be010f77e5c8))
+* deps: bump thiserror from 1.0.62 to 1.0.63 ([#105](https://github.com/rust-bio/rust-bio-types/commit/d394e73fa002883a3031f3a5899d28e2c9c0541d))
+
+
 ## [1.0.3](https://github.com/rust-bio/rust-bio-types/compare/v1.0.2...v1.0.3) (2024-07-15)
 
 
