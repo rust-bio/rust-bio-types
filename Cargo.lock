@@ -62,7 +62,7 @@ dependencies = [
 
 [[package]]
 name = "bio-types"
-version = "1.0.3"
+version = "1.0.4"
 dependencies = [
  "clap",
  "derive-new",

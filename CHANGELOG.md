@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.4](https://github.com/rust-bio/rust-bio-types/compare/v1.0.3...v1.0.4) (2024-08-05)
+
+
+### Bug Fixes
+
+* update release-please.yml to use v4 ([22dc35c](https://github.com/rust-bio/rust-bio-types/commit/22dc35c78a936ece182836c70cc13b45fff55d95))
+
 ## [1.0.3](https://github.com/rust-bio/rust-bio-types/compare/v1.0.2...v1.0.3) (2024-07-15)
 
 
