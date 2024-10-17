@@ -259,7 +259,7 @@ impl Alignment {
                         y_pretty.push('-');
                     }
                     AlignmentOperation::Xclip(len) => {
-                        for k in x.iter().take(len) {
+                        for k in x.iter().skip(x_i).take(len) {
                             x_pretty.push_str(&format!("{}", String::from_utf8_lossy(&[*k])));
                             x_i += 1;
 
@@ -269,7 +269,7 @@ impl Alignment {
                         }
                     }
                     AlignmentOperation::Yclip(len) => {
-                        for k in y.iter().take(len) {
+                        for k in y.iter().skip(y_i).take(len) {
                             y_pretty.push_str(&format!("{}", String::from_utf8_lossy(&[*k])));
                             y_i += 1;
 
@@ -536,5 +536,22 @@ mod tests {
                 (9, 10, Del)
             ]
         )
+    }
+
+    #[test]
+    fn test_pretty_suffix_xclip_or_yclip() {
+        let alignment = Alignment {
+            score: -7,
+            ystart: 1,
+            xstart: 0,
+            yend: 4,
+            xend: 3,
+            ylen: 4,
+            xlen: 4,
+            operations: vec![Yclip(1), Match, Match, Match, Xclip(1)],
+            mode: AlignmentMode::Custom,
+        };
+        let pretty = concat!(" TCGC\n ||| \nATCG \n\n\n");
+        assert_eq!(alignment.pretty(b"TCGC", b"ATCG", 100), pretty);
     }
 }
