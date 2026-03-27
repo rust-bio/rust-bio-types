@@ -11,6 +11,7 @@ use std::ops::AddAssign;
 use std::ops::Neg;
 use std::ops::SubAssign;
 use std::str::FromStr;
+use std::sync::OnceLock;
 
 use regex::Regex;
 
@@ -247,11 +248,10 @@ where
     type Err = ParseAnnotError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        lazy_static! {
-            static ref POS_RE: Regex = Regex::new(r"^(.*):(\d+)(\([+-]\))?$").unwrap();
-        }
+        static POS_RE: OnceLock<Regex> = OnceLock::new();
+        let pos_re = POS_RE.get_or_init(|| Regex::new(r"^(.*):(\d+)(\([+-]\))?$").unwrap());
 
-        let cap = POS_RE.captures(s).ok_or(ParseAnnotError::BadAnnot)?;
+        let cap = pos_re.captures(s).ok_or(ParseAnnotError::BadAnnot)?;
 
         let strand = cap
             .get(3)
