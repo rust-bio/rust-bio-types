@@ -11,6 +11,7 @@ use std::convert::Into;
 use std::fmt::{self, Display, Formatter};
 use std::ops::Neg;
 use std::str::FromStr;
+use std::sync::OnceLock;
 
 use regex::Regex;
 
@@ -313,11 +314,11 @@ where
     type Err = ParseAnnotError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        lazy_static! {
-            static ref CONTIG_RE: Regex = Regex::new(r"^(.*):(\d+)-(\d+)(\([+-]\))?$").unwrap();
-        }
+        static CONTIG_RE: OnceLock<Regex> = OnceLock::new();
+        let contig_re =
+            CONTIG_RE.get_or_init(|| Regex::new(r"^(.*):(\d+)-(\d+)(\([+-]\))?$").unwrap());
 
-        let cap = CONTIG_RE.captures(s).ok_or(ParseAnnotError::BadAnnot)?;
+        let cap = contig_re.captures(s).ok_or(ParseAnnotError::BadAnnot)?;
 
         let start = cap[2].parse::<isize>().map_err(ParseAnnotError::ParseInt)?;
         let end = cap[3].parse::<isize>().map_err(ParseAnnotError::ParseInt)?;

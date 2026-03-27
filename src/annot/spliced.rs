@@ -12,6 +12,7 @@ use std::convert::Into;
 use std::fmt::{self, Display, Formatter};
 use std::ops::Neg;
 use std::str::FromStr;
+use std::sync::OnceLock;
 
 use regex::Regex;
 
@@ -578,13 +579,13 @@ where
     type Err = ParseAnnotError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        lazy_static! {
-            static ref SPLICED_RE: Regex =
-                Regex::new(r"^(.*):(\d+)-(\d+)((?:;\d+-\d+)*)(\([+-]\))?$").unwrap();
-            static ref EXON_RE: Regex = Regex::new(r";(\d+)-(\d+)").unwrap();
-        }
+        static SPLICED_RE: OnceLock<Regex> = OnceLock::new();
+        static EXON_RE: OnceLock<Regex> = OnceLock::new();
+        let spliced_re = SPLICED_RE
+            .get_or_init(|| Regex::new(r"^(.*):(\d+)-(\d+)((?:;\d+-\d+)*)(\([+-]\))?$").unwrap());
+        let exon_re = EXON_RE.get_or_init(|| Regex::new(r";(\d+)-(\d+)").unwrap());
 
-        let cap = SPLICED_RE.captures(s).ok_or(ParseAnnotError::BadAnnot)?;
+        let cap = spliced_re.captures(s).ok_or(ParseAnnotError::BadAnnot)?;
 
         let mut starts = Vec::new();
         let mut lengths = Vec::new();
@@ -596,7 +597,7 @@ where
         starts.push(0);
         lengths.push((first_end - first_start) as usize);
 
-        let exon_caps = EXON_RE.captures_iter(&cap[4]);
+        let exon_caps = exon_re.captures_iter(&cap[4]);
 
         for exon_cap in exon_caps {
             let next_start = exon_cap[1]
